@@ -5,7 +5,7 @@ Kierowanie bloczkami:
  - obrót:
     + w prawo/w lewo
     + kazdy klocek osobno (kwadrat nie potrzebuje funkcji obrotu)
- - sprawdz()
+ - sprawdz() //Łukasz
 
 
 Typy zmiennych:
