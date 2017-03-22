@@ -2,8 +2,15 @@ Kierowanie bloczkami:
  - w prawo 
  - w lewo 
  - w dół 
- - obrót()
- -sprawdz()
+ - obrót:
+    + w prawo/w lewo
+    + kazdy klocek osobno (kwadrat nie potrzebuje funkcji obrotu)
+ - sprawdz()
 
 
 Typy zmiennych:
+
+- bool screen[84][48]
+ 84 pixele szerokosci
+ 48 pixeli wysokosci
+ 
