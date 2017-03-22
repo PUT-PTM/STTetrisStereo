@@ -1,7 +1,8 @@
 Kierowanie bloczkami:
  - w prawo 
  - w lewo 
- - w dół 
+ - w dół ( funkcja ta bedzie sie wykonywac zawsze przy przepelnieniu timera) 
+ - przyspiesz 
  - obrót: // Łukasz
     + w prawo/w lewo
     + kazdy klocek osobno (kwadrat nie potrzebuje funkcji obrotu)
