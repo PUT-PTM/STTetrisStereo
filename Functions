@@ -6,6 +6,9 @@ Kierowanie bloczkami:
     + w prawo/w lewo
     + kazdy klocek osobno (kwadrat nie potrzebuje funkcji obrotu)
  - sprawdz() //Łukasz
+ - gameOver()
+ - nowyKlocek() // Łukasz
+ - losujKlocek() // Łukasz
 
 
 Typy zmiennych:
