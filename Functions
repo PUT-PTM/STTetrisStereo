@@ -2,7 +2,7 @@ Kierowanie bloczkami:
  - w prawo 
  - w lewo 
  - w dół 
- - obrót:
+ - obrót: // Łukasz
     + w prawo/w lewo
     + kazdy klocek osobno (kwadrat nie potrzebuje funkcji obrotu)
  - sprawdz() //Łukasz
@@ -13,7 +13,11 @@ Kierowanie bloczkami:
 
 Typy zmiennych:
 
+Sugeruje by zmienne te były globalne, oszczędzi to nam zabawy z wskaznikami itp
+
 - bool screen[84][48]
  84 pixele szerokosci
  48 pixeli wysokosci
+ 
+ -int current[2][4]
  
