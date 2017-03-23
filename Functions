@@ -22,3 +22,26 @@ Sugeruje by zmienne te były globalne, oszczędzi to nam zabawy z wskaznikami it
  
  -int current[2][4]
  
+ (x=0,x=0)       NOKIA
+------------------------
+|                      |
+|                      |
+|                      |
+|                      |
+|                      |
+------------------------
+                     (x=83,y=47)
+                     
+                 (x=0,y=0)    
+----------------
+|              |
+|              |N
+|              |O
+|              |K
+|              |I
+|              |A
+|              |
+----------------
+(x=83,y=47)
+
+                     
