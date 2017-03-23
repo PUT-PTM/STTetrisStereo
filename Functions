@@ -19,29 +19,29 @@ Format Funkcji:
 void DrawShape<nazwa_figury>(int x, int y);
 
 Aktualnie Figury:
-- DrawShapeSquare(0,0);
-- DrawShapeRectangleH(0,0);
-- DrawShapeRectangleV(0,0);
+-(0) DrawShapeSquare(0,0);
+-(1) DrawShapeRectangleH(0,0);
+-(2) DrawShapeRectangleV(0,0);
 
-- DrawShapeLH(0,0); //Poziome L (Horizontal)
-- DrawShapeLHInv(0,0); // Poziome L odwrócone(Inverted)
-- DrawShapeLHMir(0,0); // Poziome L odbite(Mirrored)
-- DrawShapeLHInvMir(0,0); // Poziome L odwrocone i odbite(Inverterd & Mirrored)
+-(3) DrawShapeLH(0,0); //Poziome L (Horizontal)
+-(4) DrawShapeLHInv(0,0); // Poziome L odwrócone(Inverted)
+-(5) DrawShapeLHMir(0,0); // Poziome L odbite(Mirrored)
+-(6) DrawShapeLHInvMir(0,0); // Poziome L odwrocone i odbite(Inverterd & Mirrored)
 
-- DrawShapeLV(0,0); //Poziome L (Horizontal)
-- DrawShapeLVInv(0,0); // Poziome L odwrócone(Inverted)
-- DrawShapeLVMir(0,0); // Poziome L odbite(Mirrored)
-- DrawShapeLVInvMir(0,0); // Poziome L odwrocone i odbite(Inverterd & Mirrored)
+-(7) DrawShapeLV(0,0); //Pionowe L (Vertical)
+-(8) DrawShapeLVInv(0,0); // Pionowe L odwrócone(Inverted)
+-(9) DrawShapeLVMir(0,0); // Pionowe L odbite(Mirrored)
+-(10) DrawShapeLVInvMir(0,0); // Pionowe L odwrocone i odbite(Inverterd & Mirrored)
 
-- DrawShapeTH(0,0); //Poziome T (Horizontal)
-- DrawShapeTHInv(0,0); //Poziome odwrocone T (Horizontal)
-- DrawShapeTV(0,0); //Pionowe T (Vertical)
-- DrawShapeTVInv(0,0); //Pionowe odwrocone T (Vertical)
+-(11) DrawShapeTH(0,0); //Poziome T (Horizontal)
+-(12) DrawShapeTHInv(0,0); //Poziome odwrocone T (Horizontal)
+-(13) DrawShapeTV(0,0); //Pionowe T (Vertical)
+-(14) DrawShapeTVInv(0,0); //Pionowe odwrocone T (Vertical)
 
-- DrawShapeZH(0,0)  //Poziome Z 
-- DrawShapeZHInv(0,0) //Poziome odbite Z 
-- DrawShapeZV(0,0)  //Pionowe Z 
-- DrawShapeZVInv(0,0) //Pionowe odbite Z 
+-(15) DrawShapeZH(0,0)  //Poziome Z 
+-(16) DrawShapeZHInv(0,0) //Poziome odbite Z 
+-(17) DrawShapeZV(0,0)  //Pionowe Z 
+-(18) DrawShapeZVInv(0,0) //Pionowe odbite Z 
 //-------------------------------------------------------------------
 
 //Zmiana pozycji figur - (Piortek) Stan: 15%-----------------
