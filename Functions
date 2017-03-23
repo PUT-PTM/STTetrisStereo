@@ -13,7 +13,7 @@ Kierowanie bloczkami:
  - losujKlocek() // Łukasz
 
 
-//Rysowanie Figur: //(Piortek)  Stan:100% ----------------
+//Rysowanie Figur: //(Piortek)  Stan:99% ----------------
 
 Format Funkcji:
 void DrawShape<nazwa_figury>(int x, int y);
