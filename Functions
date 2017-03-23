@@ -1,19 +1,19 @@
 Kierowanie bloczkami:
- - w prawo 
- - w lewo 
- - w dół ( funkcja ta bedzie sie wykonywac zawsze przy przepelnieniu timera) 
- - przyspiesz 
+ - w prawo //Piortek - nizej wiecej szczegolów
+ - w lewo //Piortek - nizej wiecej szczegolów
+ - w dół //Piortek - nizej wiecej szczegolów
+ - przyspiesz //Piortek - nizej wiecej szczegolów
+ 
  - obrót: // Łukasz
-    + w prawo/w lewo
+    + w prawo
     + kazdy klocek osobno (kwadrat nie potrzebuje funkcji obrotu)
  - sprawdz() //Łukasz
- - gameOver()
+ - gameOver()  //Piortek - Stan: 0%
  - nowyKlocek() // Łukasz
  - losujKlocek() // Łukasz
 
 
-//Rysowanie Figur: //Rysowanie zakończone(Piortek)----------------
-
+//Rysowanie Figur: //(Piortek)  Stan:100% ----------------
 
 Format Funkcji:
 void DrawShape<nazwa_figury>(int x, int y);
@@ -44,19 +44,33 @@ Aktualnie Figury:
 - DrawShapeZVInv(0,0) //Pionowe odbite Z 
 //-------------------------------------------------------------------
 
+//Zmiana pozycji figur - (Piortek) Stan: 15%-----------------
+
+- void MoveRight(int x, int y, int shape); //Koordynaty to aktualna pozycja aktualnie spadajacego bloczka
+                                       //Kazdy bloczek w tej funkcji ma zabezpieceznie przed wyjsciem za obszar gry
+
+- void MoveRight(int x, int y, int shape);  //Analogicznie
+ 
+- void MoveDown(int x, int y, int shape); //Analogicznie
+
+
+//------------------------------------------------
 
 Typy zmiennych:
 
 Sugeruje by zmienne te były globalne, oszczędzi to nam zabawy z wskaznikami itp
-
-
-- int z - wielkosc chunka
-- bool screen[84][48]
- 84 pixele szerokosci
- 48 pixeli wysokosci
+ - int current[2][4];
+ - int z - wielkosc chunka
  
- -int current[2][4]
+- bool screen[84][48];
+(oryginalnie)
+- 84 pixele szerokosci
+- 48 pixeli wysokosci
+
+(w naszym projekcie ekran jest obrocony o 90stopni w prawo)
  
+
+ //Sciagawka------------------------
  (x=0,x=0)       NOKIA
 ------------------------
 |                      |
@@ -78,5 +92,5 @@ Sugeruje by zmienne te były globalne, oszczędzi to nam zabawy z wskaznikami it
 |              |
 ----------------
 (x=83,y=47)
-
+//-------------------------------
 
