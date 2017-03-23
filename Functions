@@ -11,6 +11,27 @@ Kierowanie bloczkami:
  - nowyKlocek() // Łukasz
  - losujKlocek() // Łukasz
 
+Rysowanie Figur:
+Format Funkcji 
+void DrawShape<nazwa_figury>(int x, int y);
+
+Aktualnie Figury:
+- DrawShapeSquare(0,0);
+- DrawShapeRectangleH(0,0);
+- DrawShapeRectangleV(0,0);
+- DrawShapeL(0,0); //podstawowe L
+- DrawShapeLInv(0,0); // odwrócone(Inverted)
+- DrawShapeLMir(0,0); // odbite(Mirrored)
+- DrawShapeLInvMir(0,0); // odwrocone i odbite(Inverterd & Mirrored)
+- DrawShapeTH(0,0); //Poziome T (Horizontal)
+- DrawShapeTHMir(0,0); //Poziome odbite T (Horizontal)
+- DrawShapeTV(0,0); //Pionowe T (Vertical)
+- DrawShapeTVInv(0,0); //Pionowe odwrocone T (Vertical)
+
+
+
+
+
 
 Typy zmiennych:
 
@@ -46,4 +67,4 @@ Sugeruje by zmienne te były globalne, oszczędzi to nam zabawy z wskaznikami it
 ----------------
 (x=83,y=47)
 
-                     
+
