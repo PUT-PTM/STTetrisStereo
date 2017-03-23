@@ -16,6 +16,8 @@ Typy zmiennych:
 
 Sugeruje by zmienne te były globalne, oszczędzi to nam zabawy z wskaznikami itp
 
+
+- int z - wielkosc chunka
 - bool screen[84][48]
  84 pixele szerokosci
  48 pixeli wysokosci
