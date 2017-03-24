@@ -44,7 +44,7 @@ Aktualnie Figury:
 -(18) DrawShapeZVInv(0,0) //Pionowe odbite Z 
 //-------------------------------------------------------------------
 
-//Zmiana pozycji figur - (Piortek) Stan: 36%-----------------
+//Zmiana pozycji figur - (Piortek) Stan: 57%-----------------
 
 - void MoveRight(int x, int y, int shape); //Koordynaty to aktualna pozycja aktualnie spadajacego bloczka
                                        //Kazdy bloczek w tej funkcji ma zabezpieceznie przed wyjsciem za obszar gry
