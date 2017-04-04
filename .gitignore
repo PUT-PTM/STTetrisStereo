@@ -1,0 +1,6 @@
+# CooCox Gui settings
+*.cogui
+*.comarker
+
+# Compile outputs
+STTetrisStereo/STTetrisStereo/
