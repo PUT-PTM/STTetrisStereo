@@ -1,16 +1,16 @@
 # STTetrisStereo
 
-<b>Overview:</b> Projekt zakłada stworzenie gry bazującej na kultowej grze Tetris.
+<b><i>Overview:</i></b> Projekt zakłada stworzenie gry bazującej na kultowej grze Tetris.
 Sterowanie będzie zrealizowane za pomocą 8 przyciskowego panelu, a efekty wyświetlane na wyświetlaczu od starego
 telefonu komórkowego. W założeniach projektu występuje też odtwarzanie dźwięków oraz melodii.
 
-Tools:CooCox IDE 1.7.6
+<b><i>Tools:</i></b> CooCox IDE 1.7.6
       Język programowania C
-      STM
+      STM32F407VGT6
 
-License: MIT(X11)
+<b><i>License:</i></b> MIT(X11)
 
-Credits: Piotr Pawłowski and Łukasz Kowalewski
+<b><i>Credits:</i></b> Piotr <Papiszon I Pawłowski> and Łukasz <U$Q> Kowalewski
 
 
 
