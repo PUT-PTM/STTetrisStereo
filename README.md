@@ -11,10 +11,9 @@ telefonu komórkowego. W założeniach projektu występuje też odtwarzanie dźw
 <b><i>License:</i></b> MIT(X11)
 
 <b><i>Credits:</i></b> Piotr Pawłowski and Łukasz  Kowalewski
-<p>![#1589F0](
+<p style='color:red'>
 The project was conducted during the Microprocessor Lab course held by the Institute of Control and Information Engineering, Poznan University of Technology.<br>
 Supervisor: Marek Kraft/Michał Fularz/Tomasz Mańkowski/Adam Bondyra
-)`#1589F0`
 </p>
 
 
