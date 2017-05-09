@@ -1,20 +1,23 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <history>
    <processor signature="5.4.1 -mcpu=cortex-m4 -mthumb -g -nostartfiles -Map=te.map -O0 --gc-sections -LC:\CooCox\CoIDE\configuration\ProgramData\te -TC:\CooCox\CoIDE\configuration\ProgramData\te/arm-gcc-link.ld -g">
-      <target file="te.elf" lastModified="15b243e1b4a">
-         <source file="..\obj\startup_stm32f4xx.o" lastModified="15b2032f9d2"/>
-         <source file="..\obj\main.o" lastModified="15b243e1990"/>
-         <source file="..\obj\stm32f4xx_rcc.o" lastModified="15b2032fad4"/>
-         <source file="..\obj\alfabet.o" lastModified="15b243c952b"/>
-         <source file="..\obj\tm_stm32f4_spi.o" lastModified="15b2032fd03"/>
-         <source file="..\obj\tm_stm32f4_rng.o" lastModified="15b2033a252"/>
-         <source file="..\obj\stm32f4xx_gpio.o" lastModified="15b2032fd34"/>
-         <source file="..\obj\system_stm32f4xx.o" lastModified="15b2032fd5b"/>
-         <source file="..\obj\stm32f4xx_spi.o" lastModified="15b2032fd93"/>
-         <source file="..\obj\misc.o" lastModified="15b2032fdb9"/>
-         <source file="..\obj\tm_stm32f4_gpio.o" lastModified="15b2032fdea"/>
-         <source file="..\obj\stm32f4xx_tim.o" lastModified="15b2032fe56"/>
-         <source file="..\obj\tm_stm32f4_pcd8544.o" lastModified="15b2032ff0c"/>
+      <target file="te.elf" lastModified="15ba14e9887">
+         <source file="..\obj\stm32f4xx_syscfg.o" lastModified="15b80544609"/>
+         <source file="..\obj\stm32f4xx_dac.o" lastModified="15b80544638"/>
+         <source file="..\obj\music.o" lastModified="15b97536766"/>
+         <source file="..\obj\startup_stm32f4xx.o" lastModified="15b80544674"/>
+         <source file="..\obj\main.o" lastModified="15ba14e9549"/>
+         <source file="..\obj\stm32f4xx_rcc.o" lastModified="15b805446f3"/>
+         <source file="..\obj\alfabet.o" lastModified="15ba14e9694"/>
+         <source file="..\obj\tm_stm32f4_spi.o" lastModified="15b80544862"/>
+         <source file="..\obj\tm_stm32f4_rng.o" lastModified="15b80544885"/>
+         <source file="..\obj\stm32f4xx_gpio.o" lastModified="15b805448b4"/>
+         <source file="..\obj\system_stm32f4xx.o" lastModified="15b805448dd"/>
+         <source file="..\obj\stm32f4xx_spi.o" lastModified="15b80544916"/>
+         <source file="..\obj\misc.o" lastModified="15b8054493d"/>
+         <source file="..\obj\tm_stm32f4_gpio.o" lastModified="15b8054496f"/>
+         <source file="..\obj\stm32f4xx_tim.o" lastModified="15b805449db"/>
+         <source file="..\obj\tm_stm32f4_pcd8544.o" lastModified="15b80544a1f"/>
       </target>
    </processor>
 </history>

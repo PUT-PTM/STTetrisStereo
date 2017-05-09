@@ -1,7 +1,6 @@
 #include <alfabet.h>
 #include <stdbool.h>
-#include "tm_stm32f4_pcd8544.h";
-//#include "tm_stm32f4_rng.h";
+#include "tm_stm32f4_pcd8544.h"
 
 bool screen[84][48];
 int current[2][4];
@@ -9,20 +8,119 @@ int z = 4;
 int shape = -1;
 bool collision = false;
 bool gameOver = false;
+int score = 0;
+long int rank[7][2] = { 0 };
+
+void AddToRank(int score, int name) {
+
+	for (int i = 0; i < 7; i++)
+		if (rank[i][0] <= score) {
+			for (int j = i; j < 7; j++) {
+				rank[6 - j][0] = rank[6 - (j + 1)][0];
+				rank[6 - j][1] = rank[6 - (j + 1)][1];
+			}
+
+			rank[i][0] = score;
+			rank[i][1] = name;
+			i = 10;
+		}
+}
+
+void FillRank() {
+	rank[0][0] = 0;
+	rank[0][1] = 11111111;
+
+	rank[1][0] = 0;
+	rank[1][1] = 11111111;
+
+	rank[2][0] = 0;
+	rank[2][1] = 11111111;
+
+	rank[3][0] = 0;
+	rank[3][1] = 11111111;
+
+	rank[4][0] = 0;
+	rank[4][1] = 11111111;
+
+	rank[5][0] = 0;
+	rank[5][1] = 11111111;
+
+	rank[6][0] = 0;
+	rank[6][1] = 11111111;
+}
+
+int Pow(int a, int b) {
+	int wynik = 1;
+
+	while (b--) {
+		wynik *= a;
+	}
+
+	return wynik;
+}
+
+void DrawRank() {
+
+	int x = 5;
+	int y = 47;
+
+	for (int i = 0; i < 7; i++) {
+		screen[x + 4 + (i * 11)][y - 3] = true;
+	}
+	Draw1(x, y, 2, true);
+	Draw2(x + 11, y, 2, true);
+	Draw3(x + 22, y, 2, true);
+	Draw4(x + 33, y, 2, true);
+
+	Draw5(x + 44, y, 2, true);
+
+	Draw6(x + 55, y, 2, true);
+
+	Draw7(x + 66, y, 2, true);
+
+	int scr[4] = { 0 };
+
+	long int temp = 0;
+	long int letterResult = 0;
+
+	for (int j = 0; j < 7; j++) {
+
+		letterResult = rank[j][1];
+
+		scr[0] = rank[j][0] / 1000;
+		scr[1] = (rank[j][0] - scr[0] * 1000) / 100;
+		scr[2] = (rank[j][0] - scr[0] * 1000 - scr[1] * 100) / 10;
+		scr[3] = (rank[j][0] - scr[0] * 1000 - scr[1] * 100 - scr[2] * 10);
+
+		for (int i = 0; i < 4; i++) {
+			if (i * 100 != 0)
+				temp = 1000000 / Pow(100, i);
+			else
+				temp = 1000000;
+
+			DrawLetter(x + (j * 11), y - (6 + i * 5), 2, letterResult / temp,
+					true);
+
+			if (i == 0)
+				letterResult = letterResult - ((letterResult / temp) * 1000000);
+			else
+				letterResult = letterResult
+						- ((letterResult / temp) * (1000000 / Pow(100, i)));
+
+			DrawNumber(x + (j * 11), y - (5 + i * 5) - 23, 2, scr[i], true);
+		}
+	}
+
+	DrawScreen();
+
+}
+
 int Abs(int a) {
 	if (a < 0)
 		a = a * (-1);
 	return a;
 }
 
-int Rand() {
-	int counter = TIM4->CNT;
-	while (counter < 0 || counter > 18) {
-		counter = counter / 3;
-	}
-	return counter;
-
-}
 //1 	screen[x][y-i] = true;
 
 //2		screen[x+i][y-size] = true;
@@ -38,264 +136,542 @@ int Rand() {
 //7		screen[x+size][y-i] = true;
 
 //LITERY
-void DrawS(int x, int y, int size) {
-	for (int i = 0; i < size + 1; i++)
-		screen[x][y - i] = true;
-
-	for (int i = 1; i < size; i++)
-		screen[x + i][y] = true;
-
-	for (int i = 0; i < size; i++)
-		screen[x + size][y - i] = true;
-
-	for (int i = 0; i < size; i++)
-		screen[x + size + i][y - size] = true;
-
-	for (int i = 0; i < size + 1; i++)
-		screen[x + size * 2][y - size + i] = true;
-
-}
-void DrawC(int x, int y, int size) {
-	for (int i = 0; i < size + 1; i++)
-		screen[x][y - i] = true;
-
-	for (int i = 0; i < size * 2 + 1; i++)
-		screen[x + i][y] = true;
-
-	for (int i = 0; i < size + 1; i++)
-		screen[x + (size * 2)][y - i] = true;
-
-}
-void DrawO(int x, int y, int size) {
-	for (int i = 0; i < size + 1; i++)
-		screen[x][y - i] = true;
-
-	for (int i = 0; i < size * 2 + 1; i++)
-		screen[(x + i)][y] = true;
-
-	for (int i = 0; i < size + 1; i++)
-		screen[x + (size * 2)][y - i] = true;
-
-	for (int i = 0; i < size * 2 + 1; i++)
-		screen[(x + i)][y - size] = true;
-
-}
-void DrawR(int x, int y, int size) {
-	for (int i = 0; i < size + 1; i++)
-		screen[x][y - i] = true;
-
-	for (int i = 0; i < size; i++)
-		screen[x + i + 1][y - size] = true;
-
-	for (int i = 0; i < size * 2 + 1; i++)
-		screen[(x + i)][y] = true;
-
-	for (int i = 0; i < size + 1; i++)
-		screen[x + size][y - i] = true;
-
-	for (int i = 0; i < size + 1; i++)
-		screen[x + size + i][y - i] = true;
-
-}
-void DrawE(int x, int y, int size) {
-	for (int i = 0; i < size + 1; i++)
-		screen[x][y - i] = true;
-
-	for (int i = 0; i < size * 2 + 1; i++)
-		screen[x + i][y] = true;
-
-	for (int i = 0; i < size + 1; i++)
-		screen[x + size][y - i] = true;
-
-	for (int i = 0; i < size + 1; i++)
-		screen[x + (size * 2)][y - i] = true;
-}
-void DrawN(int x, int y, int size) {
-	for (int i = 0; i < size + 1; i++)
-		screen[x + size + i][y] = true;
-
-	for (int i = 0; i < size; i++)
-		screen[x + i][y] = true;
-
-	for (int i = 0; i < size + 1; i++)
-		screen[x + i][y - size] = true;
-
-	for (int i = 0; i < size + 1; i++)
-		screen[x + size + i][y - size] = true;
-
-	for (int i = 0; i < size - 1; i++)
-		screen[x + i][y - 1] = true;
-	for (int i = 0; i < size - 1; i++)
-		screen[x + 3 + i][y - 2] = true;
-	for (int i = 0; i < size - 1; i++)
-		screen[x + 6 + i][y - 3] = true;
-
-}
-void DrawDoubleDot(int x, int y)
-
-{
-	screen[x + 1][y - 1] = true;
-	screen[x + 5][y - 1] = true;
-}
-void DrawW(int x, int y, int size) {
-	for (int i = 0; i < size + 1; i++)
-		screen[x + size + i][y] = true;
-
-	for (int i = 0; i < size; i++)
-		screen[x + i][y] = true;
-
-	for (int i = 0; i < size + 1; i++)
-		screen[x + i][y - size] = true;
-
-	for (int i = 0; i < size + 1; i++)
-		screen[x + size + i][y - size] = true;
-
-	for (int i = 0; i < 3; i++)
-		screen[x + size + i][y - 1] = true;
-	for (int i = 0; i < 3; i++)
-		screen[x + size + i - 3][y - 2] = true;
-	for (int i = 0; i < 3; i++)
-		screen[x + size + i][y - 3] = true;
-
-}
-void DrawG(int x, int y, int size) {
-	DrawC(x, y, size);
-
-	for (int i = 0; i < size / 2 + 1; i++)
-		screen[x + size][y - (size / 2) - i] = true;
-
-	for (int i = 0; i < size; i++)
-		screen[x + size + i][y - size] = true;
-}
-void DrawA(int x, int y, int size) {
+void DrawA(int x, int y, int size, bool light) {
 	//1
 	for (int i = 0; i < size + 1; i++)
-		screen[x][y - i] = true;
+		screen[x][y - i] = light;
 
 	//2
 	for (int i = 0; i < size + 1; i++)
-		screen[x + i][y - size] = true;
+		screen[x + i][y - size] = light;
 
 	//3
 	for (int i = 0; i < size + 1; i++)
-		screen[x + size + i][y - size] = true;
+		screen[x + size + i][y - size] = light;
 
 	//5
 	for (int i = 0; i < size + 1; i++)
-		screen[x + size + i][y] = true;
+		screen[x + size + i][y] = light;
 
 	//6
 	for (int i = 0; i < size; i++)
-		screen[x + i][y] = true;
+		screen[x + i][y] = light;
 
 	//7
 	for (int i = 0; i < size; i++)
-		screen[x + size][y - i] = true;
+		screen[x + size][y - i] = light;
 }
-void DrawM(int x, int y, int size) {
+void DrawB(int x, int y, int size, bool light) {
+	DrawO(x, y, size, light);
+	for (int i = 0; i < size; i++)
+		screen[x + size][y - i] = light;
+
+	screen[x + size + size][y - size] = false;
+	screen[x][y - size] = false;
+}
+void DrawC(int x, int y, int size, bool light) {
 	for (int i = 0; i < size + 1; i++)
-		screen[x + size + i][y] = true;
+		screen[x][y - i] = light;
+
+	for (int i = 0; i < size * 2 + 1; i++)
+		screen[x + i][y] = light;
+
+	for (int i = 0; i < size + 1; i++)
+		screen[x + (size * 2)][y - i] = light;
+
+}
+void DrawD(int x, int y, int size, bool light) {
+	DrawO(x, y, size, light);
+	screen[x + size + size][y - size] = false;
+	screen[x][y - size] = false;
+}
+void DrawE(int x, int y, int size, bool light) {
+	for (int i = 0; i < size + 1; i++)
+		screen[x][y - i] = light;
+
+	for (int i = 0; i < size * 2 + 1; i++)
+		screen[x + i][y] = light;
+
+	for (int i = 0; i < size + 1; i++)
+		screen[x + size][y - i] = light;
+
+	for (int i = 0; i < size + 1; i++)
+		screen[x + (size * 2)][y - i] = light;
+}
+void DrawF(int x, int y, int size, bool light) {
+
+	for (int i = 0; i < size + 1; i++)
+		screen[x][y - i] = light;
+
+	for (int i = 0; i < size * 2 + 1; i++)
+		screen[x + i][y] = light;
+
+	for (int i = 0; i < size + 1; i++)
+		screen[x + size][y - i] = light;
+
+}
+void DrawG(int x, int y, int size, bool light) {
+	DrawC(x, y, size, light);
+
+	for (int i = 0; i < size / 2 + 1; i++)
+		screen[x + size][y - (size / 2) - i] = light;
 
 	for (int i = 0; i < size; i++)
-		screen[x + i][y] = true;
+		screen[x + size + i][y - size] = light;
+}
+void DrawH(int x, int y, int size, bool light) {
+	for (int i = 0; i < size * 2 + 1; i++)
+		screen[x + i][y] = light;
 
-	for (int i = 0; i < size + 1; i++)
-		screen[x + i][y - size] = true;
+	for (int i = 0; i < size * 2 + 1; i++)
+		screen[x + i][y - size] = light;
 
-	for (int i = 0; i < size + 1; i++)
-		screen[x + size + i][y - size] = true;
+	for (int i = 0; i < size; i++)
+		screen[x + size][y - i] = light;
+}
+void DrawI(int x, int y, int size, bool light) {
 
-	for (int i = 0; i < 3; i++)
-		screen[x + i][y - 1] = true;
-	for (int i = 0; i < 3; i++)
-		screen[x + i + 3][y - 2] = true;
-	for (int i = 0; i < 3; i++)
-		screen[x + i][y - 3] = true;
+	for (int i = 0; i < size * 2 + 1; i++) {
+		screen[x + i][y - (size / 2)] = light;
+	}
 
 }
-void DrawK(int x, int y, int size) {
+void DrawJ(int x, int y, int size, bool light) {
+	for (int i = 0; i < size * 2 + 1; i++)
+		screen[x + i][y - size] = light;
+
+	for (int i = 0; i < size; i++)
+		screen[x + size * 2][y - size + i] = light;
+	for (int i = 0; i < size; i++)
+		screen[x + size + i][y] = light;
+}
+void DrawK(int x, int y, int size, bool light) {
 	//5
 	for (int i = 0; i < size + 1; i++)
-		screen[x + size + i][y] = true;
+		screen[x + size + i][y] = light;
 
 	//6
 	for (int i = 0; i < size; i++)
-		screen[x + i][y] = true;
+		screen[x + i][y] = light;
 
 	for (int i = 0; i < size; i++)
-		screen[x + size - i][y - i] = true;
+		screen[x + size - i][y - i] = light;
 
 	for (int i = 0; i < size; i++)
-		screen[x + size + i][y - i] = true;
+		screen[x + size + i][y - i] = light;
 
-	screen[x][y - size] = true;
-	screen[x + (size * 2)][y - size] = true;
+	screen[x][y - size] = light;
+	screen[x + (size * 2)][y - size] = light;
 }
-void DrawX(int x, int y, int size) {
-	for (int i = 0; i < size - 1; i++)
-		screen[x + i][y - 1] = true;
-	for (int i = 0; i < size - 1; i++)
-		screen[x + 3 + i][y - 2] = true;
-	for (int i = 0; i < size - 1; i++)
-		screen[x + 6 + i][y - 3] = true;
-
-	for (int i = 0; i < size - 1; i++)
-		screen[x + i][y - 3] = true;
-	for (int i = 0; i < size - 1; i++)
-		screen[x + 3 + i][y - 2] = true;
-	for (int i = 0; i < size - 1; i++)
-		screen[x + 6 + i][y - 1] = true;
-	screen[x][y - size] = true;
-	screen[x + (size * 2)][y - size] = true;
-	screen[x][y] = true;
-	screen[x + (size * 2)][y] = true;
-}
-void DrawI(int x, int y, int size) {
+void DrawL(int x, int y, int size, bool light) {
 	for (int i = 0; i < size * 2 + 1; i++)
-		screen[x + i][y - (size / 2) - 1] = true;
+		screen[x + i][y] = light;
+	for (int i = 0; i < size; i++)
+		screen[x + size * 2][y - size + i] = light;
 
 }
-void DrawT(int x, int y, int size) {
-	DrawI(x, y, size);
-	for (int i = 0; i < size + 2; i++)
-		screen[x][y - i] = true;
+void DrawM(int x, int y, int size, bool light) {
+	if (size == 2) {
+		for (int i = 0; i < size * 2 + 1; i++)
+			screen[x + i][y] = light;
+
+		for (int i = 0; i < size * 2 + 1; i++)
+			screen[x + i][y - size] = light;
+
+		screen[x + 1][y - size + 1] = light;
+
+	} else {
+		for (int i = 0; i < size * 2 + 1; i++)
+			screen[x + i][y] = light;
+
+		for (int i = 0; i < size * 2 + 1; i++)
+			screen[x + i][y - size] = light;
+
+		for (int i = 0; i < 3; i++)
+			screen[x + i][y - 1] = light;
+		for (int i = 0; i < 3; i++)
+			screen[x + i + 3][y - 2] = light;
+		for (int i = 0; i < 3; i++)
+			screen[x + i][y - 3] = light;
+
+	}
 
 }
-void DrawV(int x, int y, int size) {
+void DrawN(int x, int y, int size, bool light) {
+	if (size == 2) {
+		for (int i = 0; i < size * 2 + 1; i++)
+			screen[x + i][y] = light;
+		for (int i = 0; i < size * 2 + 1; i++)
+			screen[x + i][y - size] = light;
+		screen[x][y - 1] = light;
+	} else {
+		for (int i = 0; i < size + 1; i++)
+			screen[x + size + i][y] = light;
 
-	screen[x][y] = true;
-	screen[x+1][y] = true;
-	for (int i = 0; i < 4; i++)
-		screen[x + i+2][y-1] = true;
+		for (int i = 0; i < size; i++)
+			screen[x + i][y] = light;
 
-	for (int i = 0; i < 3; i++)
-			screen[x + i+4][y-2] = true;
+		for (int i = 0; i < size + 1; i++)
+			screen[x + i][y - size] = light;
 
-	for (int i = 0; i < 2; i++)
-				screen[x + i+6][y-2] = true;
+		for (int i = 0; i < size + 1; i++)
+			screen[x + size + i][y - size] = light;
 
+		for (int i = 0; i < size - 1; i++)
+			screen[x + i][y - 1] = light;
+		for (int i = 0; i < size - 1; i++)
+			screen[x + 3 + i][y - 2] = light;
+		for (int i = 0; i < size - 1; i++)
+			screen[x + 6 + i][y - 3] = light;
 
+	}
 
-	screen[x][y-size] = true;
-	screen[x+1][y-size] = true;
-	for (int i = 0; i < 4; i++)
-			screen[x + i+2][y-3] = true;
+}
+void DrawO(int x, int y, int size, bool light) {
+	for (int i = 0; i < size + 1; i++)
+		screen[x][y - i] = light;
+
+	for (int i = 0; i < size * 2 + 1; i++)
+		screen[(x + i)][y] = light;
+
+	for (int i = 0; i < size + 1; i++)
+		screen[x + (size * 2)][y - i] = light;
+
+	for (int i = 0; i < size * 2 + 1; i++)
+		screen[(x + i)][y - size] = light;
+
+}
+void DrawP(int x, int y, int size, bool light) {
+	for (int i = 0; i < size + 1; i++)
+		screen[x][y - i] = light;
+
+	for (int i = 0; i < size; i++)
+		screen[x + i + 1][y - size] = light;
+
+	for (int i = 0; i < size * 2 + 1; i++)
+		screen[(x + i)][y] = light;
+
+	for (int i = 0; i < size + 1; i++)
+		screen[x + size][y - i] = light;
+
+}
+void DrawQ(int x, int y, int size, bool light) {
+	DrawO(x, y, size, light);
+
+	if (size == 2) {
+
+		screen[x + size + size][y - 2] = !light;
+	} else {
+		for (int i = 2; i < size + 1; i++)
+			screen[x + size + i][y - i] = light;
+
+	}
+
+}
+void DrawR(int x, int y, int size, bool light) {
+	for (int i = 0; i < size + 1; i++)
+		screen[x][y - i] = light;
+
+	for (int i = 0; i < size; i++)
+		screen[x + i + 1][y - size] = light;
+
+	for (int i = 0; i < size * 2 + 1; i++)
+		screen[(x + i)][y] = light;
+
+	for (int i = 0; i < size + 1; i++)
+		screen[x + size][y - i] = light;
+
+	for (int i = 0; i < size + 1; i++)
+		screen[x + size + i][y - i] = light;
+
+}
+void DrawS(int x, int y, int size, bool light) {
+	for (int i = 0; i < size + 1; i++)
+		screen[x][y - i] = light;
+
+	for (int i = 1; i < size; i++)
+		screen[x + i][y] = light;
+
+	for (int i = 0; i < size; i++)
+		screen[x + size][y - i] = light;
+
+	for (int i = 0; i < size; i++)
+		screen[x + size + i][y - size] = light;
+
+	for (int i = 0; i < size + 1; i++)
+		screen[x + size * 2][y - size + i] = light;
+
+}
+void DrawT(int x, int y, int size, bool light) {
+	DrawI(x, y, size, light);
+
+	for (int i = 0; i < size + 1; i++)
+		screen[x][y - i] = light;
+
+}
+void DrawU(int x, int y, int size, bool light) {
+
+	for (int i = 0; i < size * 2 + 1; i++)
+		screen[x + i][y] = light;
+
+	for (int i = 0; i < size * 2 + 1; i++)
+		screen[x + i][y - size] = light;
+
+	for (int i = 0; i < size; i++)
+		screen[x + size * 2][y - size + i] = light;
+}
+void DrawV(int x, int y, int size, bool light) {
+	if (size == 2) {
+		for (int i = 0; i < 4; i++)
+			screen[x + i][y] = light;
+		for (int i = 0; i < 4; i++)
+			screen[x + i][y - size] = light;
+		screen[x + 4][y - 1] = light;
+
+	} else {
+		screen[x][y] = light;
+		screen[x + 1][y] = light;
+		for (int i = 0; i < 4; i++)
+			screen[x + i + 2][y - 1] = light;
+
+		for (int i = 0; i < 3; i++)
+			screen[x + i + 4][y - 2] = light;
+
+		for (int i = 0; i < 2; i++)
+			screen[x + i + 6][y - 2] = light;
+
+		screen[x][y - size] = light;
+		screen[x + 1][y - size] = light;
+		for (int i = 0; i < 4; i++)
+			screen[x + i + 2][y - 3] = light;
+	}
+
+}
+void DrawW(int x, int y, int size, bool light) {
+	if (size == 2) {
+		DrawU(x, y, size, light);
+
+		screen[x + 3][y - 1] = light;
+		screen[x + 4][y - 1] = !light;
+	}
+
+	else {
+		for (int i = 0; i < size + 1; i++)
+			screen[x + size + i][y] = light;
+
+		for (int i = 0; i < size; i++)
+			screen[x + i][y] = light;
+
+		for (int i = 0; i < size + 1; i++)
+			screen[x + i][y - size] = light;
+
+		for (int i = 0; i < size + 1; i++)
+			screen[x + size + i][y - size] = light;
+
+		for (int i = 0; i < 3; i++)
+			screen[x + size + i][y - 1] = light;
+		for (int i = 0; i < 3; i++)
+			screen[x + size + i - 3][y - 2] = light;
+		for (int i = 0; i < 3; i++)
+			screen[x + size + i][y - 3] = light;
+
+	}
+
+}
+void DrawX(int x, int y, int size, bool light) {
+	if (size == 2) {
+		for (int i = 0; i < 2; i++)
+			screen[x + i][y] = light;
+		for (int i = 0; i < 2; i++)
+			screen[x + i][y - size] = light;
+
+		for (int i = 0; i < 2; i++)
+			screen[x + i + 3][y] = light;
+		for (int i = 0; i < 2; i++)
+			screen[x + i + 3][y - size] = light;
+
+		screen[x + 2][y - 1] = light;
+	} else {
+		for (int i = 0; i < size - 1; i++)
+			screen[x + i][y - 1] = light;
+		for (int i = 0; i < size - 1; i++)
+			screen[x + 3 + i][y - 2] = light;
+		for (int i = 0; i < size - 1; i++)
+			screen[x + 6 + i][y - 3] = light;
+
+		for (int i = 0; i < size - 1; i++)
+			screen[x + i][y - 3] = light;
+		for (int i = 0; i < size - 1; i++)
+			screen[x + 3 + i][y - 2] = light;
+		for (int i = 0; i < size - 1; i++)
+			screen[x + 6 + i][y - 1] = light;
+		screen[x][y - size] = light;
+		screen[x + (size * 2)][y - size] = light;
+		screen[x][y] = light;
+		screen[x + (size * 2)][y] = light;
+	}
+
+}
+void DrawY(int x, int y, int size, bool light) {
+	if (size == 2) {
+		for (int i = 0; i < 3; i++)
+			screen[x + i][y] = light;
+		for (int i = 0; i < 3; i++)
+			screen[x + i][y - size] = light;
+		screen[x + 3][y - 1] = light;
+		screen[x + 4][y - 1] = light;
+
+	} else {
+		for (int i = 0; i < size + 1; i++)
+			screen[x + size + i][y - 2] = light;
+
+		screen[x][y - 4] = light;
+		screen[x + 1][y - 4] = light;
+
+		screen[x][y] = light;
+		screen[x + 1][y] = light;
+
+		screen[x + 2][y - 3] = light;
+		screen[x + 3][y - 3] = light;
+
+		screen[x + 2][y - 1] = light;
+		screen[x + 3][y - 1] = light;
+	}
+
+}
+void DrawZ(int x, int y, int size, bool light) {
+	if (size == 2) {
+		for (int i = 0; i < 3; i++)
+			screen[x][y - i] = light;
+		for (int i = 0; i < 3; i++)
+			screen[x + size + size][y - i] = light;
+
+		for (int i = 0; i < 2; i++)
+			screen[x + i][y - size] = light;
+		for (int i = 0; i < 2; i++)
+			screen[x + i + 3][y] = light;
+
+		screen[x + 2][y - 1] = light;
+
+	} else {
+		for (int i = 0; i < size + 1; i++)
+			screen[x][y - i] = light;
+
+		for (int i = 0; i < size - 1; i++)
+			screen[x + i][y - 3] = light;
+		for (int i = 0; i < size - 1; i++)
+			screen[x + 3 + i][y - 2] = light;
+		for (int i = 0; i < size - 1; i++)
+			screen[x + 6 + i][y - 1] = light;
+
+		for (int i = 0; i < size + 1; i++)
+			screen[x + size * 2][y - size + i] = light;
+	}
+}
+void DrawDoubleDot(int x, int y) {
+	screen[x + 1][y - 1] = true;
+	screen[x + 5][y - 1] = true;
 }
 //---------------------------
+void DrawLetter(int x, int y, int size, int letter, bool light) {
+	switch (letter) {
 
-//LICZBY
-void Draw0(int x, int y, int size) {
-	DrawO(x, y, size);
+	case 1:
+		DrawA(x, y, size, light);
+		break;
+	case 2:
+		DrawB(x, y, size, light);
+		break;
+	case 3:
+		DrawC(x, y, size, light);
+		break;
+	case 4:
+		DrawD(x, y, size, light);
+		break;
+	case 5:
+		DrawE(x, y, size, light);
+		break;
+	case 6:
+		DrawF(x, y, size, light);
+		break;
+	case 7:
+		DrawG(x, y, size, light);
+		break;
+	case 8:
+		DrawH(x, y, size, light);
+		break;
+	case 9:
+		DrawI(x, y, size, light);
+		break;
+	case 10:
+		DrawJ(x, y, size, light);
+		break;
+	case 11:
+		DrawK(x, y, size, light);
+		break;
+	case 12:
+		DrawL(x, y, size, light);
+		break;
+	case 13:
+		DrawM(x, y, size, light);
+		break;
+	case 14:
+		DrawN(x, y, size, light);
+		break;
+	case 15:
+		DrawO(x, y, size, light);
+		break;
+	case 16:
+		DrawP(x, y, size, light);
+		break;
+	case 17:
+		DrawQ(x, y, size, light);
+		break;
+	case 18:
+		DrawR(x, y, size, light);
+		break;
+	case 19:
+		DrawS(x, y, size, light);
+		break;
+	case 20:
+		DrawT(x, y, size, light);
+		break;
+	case 21:
+		DrawU(x, y, size, light);
+		break;
+	case 22:
+		DrawV(x, y, size, light);
+		break;
+	case 23:
+		DrawW(x, y, size, light);
+		break;
+	case 24:
+		DrawX(x, y, size, light);
+		break;
+	case 25:
+		DrawY(x, y, size, light);
+		break;
+	case 26:
+		DrawZ(x, y, size, light);
+		break;
+	}
 
 }
-void Draw1(int x, int y, int size) {
+//----------------------------
+
+//LICZBY
+void Draw0(int x, int y, int size, bool light) {
+	DrawO(x, y, size, light);
+
+}
+void Draw1(int x, int y, int size, bool light) {
 	for (int i = 0; i < size; i++)
 		screen[x + i][y - size + i] = true;
 
 	for (int i = 0; i < size * 2 + 1; i++)
 		screen[x + i][y - size] = true;
 }
-void Draw2(int x, int y, int size) {
+void Draw2(int x, int y, int size, bool light) {
 	for (int i = 0; i < size + 1; i++)
 		screen[x][y - i] = true;
 
@@ -312,7 +688,7 @@ void Draw2(int x, int y, int size) {
 		screen[x + size * 2][y - size + i] = true;
 
 }
-void Draw3(int x, int y, int size) {
+void Draw3(int x, int y, int size, bool light) {
 	for (int i = 0; i < size + 1; i++)
 		screen[x][y - i] = true;
 
@@ -326,7 +702,7 @@ void Draw3(int x, int y, int size) {
 		screen[x + (size * 2)][y - i] = true;
 
 }
-void Draw4(int x, int y, int size) {
+void Draw4(int x, int y, int size, bool light) {
 	for (int i = 0; i < size; i++)
 		screen[x + i][y] = true;
 	for (int i = 0; i < size; i++)
@@ -337,10 +713,10 @@ void Draw4(int x, int y, int size) {
 		screen[x + size + i][y - size] = true;
 
 }
-void Draw5(int x, int y, int size) {
-	DrawS(x, y, size);
+void Draw5(int x, int y, int size, bool light) {
+	DrawS(x, y, size, light);
 }
-void Draw6(int x, int y, int size) {
+void Draw6(int x, int y, int size, bool light) {
 
 	for (int i = 0; i < size + 1; i++)
 		screen[x][y - i] = true;
@@ -357,24 +733,24 @@ void Draw6(int x, int y, int size) {
 	for (int i = 0; i < size + 1; i++)
 		screen[x + size * 2][y - size + i] = true;
 }
-void Draw7(int x, int y, int size) {
+void Draw7(int x, int y, int size, bool light) {
 	for (int i = 0; i < size + 1; i++)
 		screen[x][y - i] = true;
 
 	for (int i = 0; i < size * 2 + 1; i++)
 		screen[x + i][y - size] = true;
 }
-void Draw8(int x, int y, int size) {
-	DrawO(x, y, size);
+void Draw8(int x, int y, int size, bool light) {
+	DrawO(x, y, size, light);
 
 	for (int i = 0; i < size; i++)
 		screen[x + size][y - i] = true;
 }
-void Draw9(int x, int y, int size) {
-	DrawS(x, y, size);
+void Draw9(int x, int y, int size, bool light) {
+	Draw5(x, y, size, light);
 
 	for (int i = 0; i < size + 1; i++)
-		screen[x + size + i][y - size] = true;
+		screen[x + i][y - size] = true;
 }
 //-----------------------------
 
@@ -387,22 +763,87 @@ void DrawTetrisBorder() {
 
 	for (int i = 0; i < 47; i++) {
 		screen[83][47 - i] = true;
-		screen[8][47 - i] = true;
+		screen[7][47 - i] = true;
 	}
+
+}
+void DrawChangePointerUP(int x, int y, int size) {
+	x = x - 2;
+	size++;
+	for (int i = 0; i < size; i++)
+		screen[x][y - i] = true;
+
+	y++;
+	for (int i = 1; i < size / 2 + 1; i++)
+		screen[x - i][y - i] = true;
+
+	for (int i = 0; i < size / 2 + 1; i++)
+		screen[x - ((size / 2) + 1) + i][y - ((size / 2) + 1) - i] = true;
+
+}
+void ClearChangePointerUP(int x, int y, int size) {
+	x = x - 2;
+	size++;
+	for (int i = 0; i < size; i++)
+		screen[x][y - i] = false;
+
+	y++;
+	for (int i = 1; i < size / 2 + 1; i++)
+		screen[x - i][y - i] = false;
+
+	for (int i = 0; i < size / 2 + 1; i++)
+		screen[x - ((size / 2) + 1) + i][y - ((size / 2) + 1) - i] = false;
+
+}
+void DrawChangePointerDOWN(int x, int y, int size) {
+	size++;
+	x = x + (size * 2);
+	//size++;
+
+	for (int i = 0; i < size; i++)
+		screen[x][y - i] = true;
+
+	y++;
+	for (int i = 1; i < size / 2 + 1; i++)
+		screen[x + i][y - i] = true;
+
+	for (int i = 0; i < size / 2 + 1; i++)
+		screen[x + ((size / 2) + 1) - i][y - ((size / 2) + 1) - i] = true;
+
+}
+void ClearChangePointerDOWN(int x, int y, int size) {
+	size++;
+	x = x + (size * 2);
+
+	for (int i = 0; i < size; i++)
+		screen[x][y - i] = false;
+
+	y++;
+	for (int i = 1; i < size / 2 + 1; i++)
+		screen[x + i][y - i] = false;
+
+	for (int i = 0; i < size / 2 + 1; i++)
+		screen[x + ((size / 2) + 1) - i][y - ((size / 2) + 1) - i] = false;
 
 }
 void DrawPointer(int x, int y, int size) {
 	x = x + 1;
 	for (int i = 0; i < size * 2; i++)
 		screen[x + i][y] = true;
-	for (int i = 0; i < size; i++)
-		screen[x + (size * 2) - i][y - i] = true;
-	for (int i = 0; i < size; i++)
+
+	for (int i = 0; i < size; i++) {
 		screen[x + i][y - i] = true;
+		screen[x + (size * 2) - i][y - i] = true;
+	}
 
 	screen[x + size / 2 + 2][y - size] = true;
 
 }
+void ClearPointer(int x, int y, int size) {
+	x = x + 1;
+	FillREC(x, y, x + 12, y - 4, false);
+}
+
 void DrawChunk(int x, int y) {
 	for (int i = 0; i < z + 1; i++) {
 		screen[x + i][y] = true;
@@ -423,11 +864,23 @@ void ClearChunk(int x, int y) {
 		screen[x + i][y - i] = false;
 	}
 }
+void ClearChunk2(int x, int y) {
+	for (int i = 0; i < 3; i++) {
+		screen[x + i][y] = false;
+		screen[x][y - i] = false;
+		screen[x + z - 1][y - i] = false;
+		screen[x + i][y - z + 1] = false;
+
+		screen[x + z - 1][y - 3] = false;
+
+		screen[x + i][y - i] = false;
+	}
+}
 //---------------------
 
 //FIGURY
 void DrawShapeSquare(int x, int y) {
-	//if(screen[x][y] == true || screen[x][y-z] == true || screen[x+z][y] == true || screen[x+z][y-z] == true) gameOver();
+	//if(screen[x][y] == true || screen[x][y-z] == true || screen[x+z][y] == true || screen[x+z][y-z] == true) gameOver = true;
 
 	DrawChunk(x, y);
 	DrawChunk(x, y - z - 1);
@@ -447,7 +900,7 @@ void DrawShapeSquare(int x, int y) {
 	current[1][3] = y - z - 1;
 }
 void DrawShapeRectangleH(int x, int y) {
-	//if(screen[x][y] == true || screen[x][y-z] == true || screen[x+z][y] == true || screen[x+z][y-z] == true) gameOver();
+	//if(screen[x][y] == true || screen[x][y-z] == true || screen[x+z][y] == true || screen[x+z][y-z] == true) gameOver = true;
 
 	DrawChunk(x, y);
 	DrawChunk(x, y - z - 1);
@@ -467,7 +920,7 @@ void DrawShapeRectangleH(int x, int y) {
 	current[1][3] = y - 3 * (z + 1);
 }
 void DrawShapeRectangleV(int x, int y) {
-	//if(screen[x][y] == true || screen[x][y-z] == true || screen[x+z][y] == true || screen[x+z][y-z] == true) gameOver();
+	//if(screen[x][y] == true || screen[x][y-z] == true || screen[x+z][y] == true || screen[x+z][y-z] == true) gameOver = true;
 
 	DrawChunk(x, y);
 	DrawChunk(x + z + 1, y);
@@ -488,7 +941,7 @@ void DrawShapeRectangleV(int x, int y) {
 }
 
 void DrawShapeLH(int x, int y) {
-	//if(screen[x][y] == true || screen[x][y-z] == true || screen[x+z][y] == true || screen[x+z][y-z] == true) gameOver();
+	//if(screen[x][y] == true || screen[x][y-z] == true || screen[x+z][y] == true || screen[x+z][y-z] == true) gameOver = true;
 
 	DrawChunk(x, y);
 	DrawChunk(x, y - z - 1);
@@ -508,7 +961,7 @@ void DrawShapeLH(int x, int y) {
 	current[1][3] = y - 2 * (z + 1);
 }
 void DrawShapeLHInv(int x, int y) {
-	//if(screen[x][y] == true || screen[x][y-z] == true || screen[x+z][y] == true || screen[x+z][y-z] == true) gameOver();
+	//if(screen[x][y] == true || screen[x][y-z] == true || screen[x+z][y] == true || screen[x+z][y-z] == true) gameOver = true;
 
 	DrawChunk(x, y);
 	DrawChunk(x, y - z - 1);
@@ -528,7 +981,7 @@ void DrawShapeLHInv(int x, int y) {
 	current[1][3] = y;
 }
 void DrawShapeLHMir(int x, int y) {
-	//if(screen[x][y] == true || screen[x][y-z] == true || screen[x+z][y] == true || screen[x+z][y-z] == true) gameOver();
+	//if(screen[x][y] == true || screen[x][y-z] == true || screen[x+z][y] == true || screen[x+z][y-z] == true) gameOver = true;
 
 	DrawChunk(x, y);
 	DrawChunk(x, y - z - 1);
@@ -568,7 +1021,7 @@ void DrawShapeLHInvMir(int x, int y) {
 }
 
 void DrawShapeLV(int x, int y) {
-	//if(screen[x][y] == true || screen[x][y-z] == true || screen[x+z][y] == true || screen[x+z][y-z] == true) gameOver();
+	//if(screen[x][y] == true || screen[x][y-z] == true || screen[x+z][y] == true || screen[x+z][y-z] == true) gameOver = true;
 
 	DrawChunk(x, y);
 	DrawChunk(x + z + 1, y);
@@ -588,7 +1041,7 @@ void DrawShapeLV(int x, int y) {
 	current[1][3] = y - z - 1;
 }
 void DrawShapeLVInv(int x, int y) {
-	//if(screen[x][y] == true || screen[x][y-z] == true || screen[x+z][y] == true || screen[x+z][y-z] == true) gameOver();
+	//if(screen[x][y] == true || screen[x][y-z] == true || screen[x+z][y] == true || screen[x+z][y-z] == true) gameOver = true;
 
 	DrawChunk(x, y);
 	DrawChunk(x + z + 1, y);
@@ -608,7 +1061,7 @@ void DrawShapeLVInv(int x, int y) {
 	current[1][3] = y + z + 1;
 }
 void DrawShapeLVMir(int x, int y) {
-	//if(screen[x][y] == true || screen[x][y-z] == true || screen[x+z][y] == true || screen[x+z][y-z] == true) gameOver();
+	//if(screen[x][y] == true || screen[x][y-z] == true || screen[x+z][y] == true || screen[x+z][y-z] == true) gameOver = true;
 
 	DrawChunk(x, y);
 	DrawChunk(x + z + 1, y);
@@ -628,7 +1081,7 @@ void DrawShapeLVMir(int x, int y) {
 	current[1][3] = y - z - 1;
 }
 void DrawShapeLVInvMir(int x, int y) {
-	//if(screen[x][y] == true || screen[x][y-z] == true || screen[x+z][y] == true || screen[x+z][y-z] == true) gameOver();
+	//if(screen[x][y] == true || screen[x][y-z] == true || screen[x+z][y] == true || screen[x+z][y-z] == true) gameOver = true;
 
 	DrawChunk(x, y);
 	DrawChunk(x + z + 1, y);
@@ -804,135 +1257,202 @@ void DrawShapeZVInv(int x, int y) {
 //----------
 
 //NAPISY
-void WriteGOSIA(int x, int y, int size) {
-	DrawG(x, y, size);
+void WriteFUNCTOSTART(int x, int y, int size, bool light) {
+	DrawF(x, y, size, light);
 	y = y - size - 2;
-	DrawO(x, y, size);
+	DrawU(x, y, size, light);
 	y = y - size - 2;
-	DrawS(x, y, size);
+	DrawN(x, y, size, light);
 	y = y - size - 2;
-	DrawI(x, y, size);
+	DrawC(x, y, size, light);
+	y = y - size - 4;
+	DrawT(x, y, size, light);
 	y = y - size - 2;
-	DrawA(x, y, size);
+	DrawO(x, y, size, light);
 
+	y = y + 4 * size + 10;
+	x = x + 10;
+
+	DrawS(x, y, size, light);
+	y = y - size - 2;
+	DrawT(x, y, size, light);
+	y = y - size - 2;
+	DrawA(x, y, size, light);
+	y = y - size - 2;
+	DrawR(x, y, size, light);
+	y = y - size - 2;
+	DrawT(x, y, size, light);
 }
-void WriteSCORE(int x, int y, int size, int score) {
+void WriteSCORE(int x, int y, int size, int score, bool light) {
 
-	DrawS(x, y, size);
+	DrawS(x, y, size, light);
 	y = y - size - 2;
-	DrawC(x, y, size);
+	DrawC(x, y, size, light);
 	y = y - size - 2;
-	DrawO(x, y, size);
+	DrawO(x, y, size, light);
 	y = y - size - 2;
-	DrawR(x, y, size);
+	DrawR(x, y, size, light);
 	y = y - size - 2;
-	DrawE(x, y, size);
+	DrawE(x, y, size, light);
 	y = y - size - 1;
 	DrawDoubleDot(x, y);
 	y = y - size - 1;
 
-	Draw0(x, y, size);
+	Draw0(x, y, size, light);
 	y = y - size - 2;
-	Draw0(x, y, size);
+	Draw0(x, y, size, light);
 	y = y - size - 2;
-	Draw0(x, y, size);
+	Draw0(x, y, size, light);
 	y = y - size - 2;
-	Draw0(x, y, size);
+	Draw0(x, y, size, light);
 }
-void WriteNEWGAME(int x, int y, int size) {
-	DrawN(x, y, size);
+void WriteNEWGAME(int x, int y, int size, bool light) {
+	DrawN(x, y, size, light);
 	y = y - size - 2;
-	DrawE(x, y, size);
+	DrawE(x, y, size, light);
 	y = y - size - 2;
-	DrawW(x, y, size);
+	DrawW(x, y, size, light);
 	y = y - size - 4;
-	DrawG(x, y, size);
+	DrawG(x, y, size, light);
 	y = y - size - 2;
-	DrawA(x, y, size);
+	DrawA(x, y, size, light);
 	y = y - size - 2;
-	DrawM(x, y, size);
+	DrawM(x, y, size, light);
 	y = y - size - 2;
-	DrawE(x, y, size);
+	DrawE(x, y, size, light);
 
 }
-void WriteRANK(int x, int y, int size) {
-	DrawR(x, y, size);
+void WriteRANK(int x, int y, int size, bool light) {
+	DrawR(x, y, size, light);
 	y = y - size - 2;
-	DrawA(x, y, size);
+	DrawA(x, y, size, light);
 	y = y - size - 2;
-	DrawN(x, y, size);
+	DrawN(x, y, size, light);
 	y = y - size - 2;
-	DrawK(x, y, size);
+	DrawK(x, y, size, light);
 }
-void WriteEXIT(int x, int y, int size) {
-	DrawE(x, y, size);
+void WriteEXIT(int x, int y, int size, bool light) {
+	DrawE(x, y, size, light);
 	y = y - size - 2;
-	DrawX(x, y, size);
+	DrawX(x, y, size, light);
 	y = y - size - 2;
-	DrawI(x, y, size);
+	DrawI(x, y, size, light);
 	y = y - size - 2;
-	DrawT(x, y, size);
+	DrawT(x, y, size, light);
 
 }
-void WriteEND(int x, int y, int size) {
-	DrawG(x, y, size);
+void WriteEND(int x, int y, int size, bool light) {
+	DrawG(x, y, size, light);
 	y = y - size - 2;
-	DrawA(x, y, size);
+	DrawA(x, y, size, light);
 	y = y - size - 2;
-	DrawM(x, y, size);
+	DrawM(x, y, size, light);
 	y = y - size - 2;
-	DrawE(x, y, size);
+	DrawE(x, y, size, light);
 	y = y - size - 4;
 
-	DrawO(x, y, size);
+	DrawO(x, y, size, light);
 	y = y - size - 2;
-	DrawV(x, y, size);
+	DrawV(x, y, size, light);
 	y = y - size - 2;
-	DrawE(x, y, size);
+	DrawE(x, y, size, light);
 	y = y - size - 2;
-	DrawR(x, y, size);
+	DrawR(x, y, size, light);
 
 }
-void WriteTETRIS(int x, int y, int size) {
-	DrawT(x, y, size);
+void WriteTETRIS(int x, int y, int size, bool light) {
+	DrawT(x, y, size, light);
 	y = y - size - 3;
-	DrawE(x, y, size);
+	DrawE(x, y, size, light);
 	y = y - size - 2;
-	DrawT(x, y, size);
+	DrawT(x, y, size, light);
 	y = y - size - 3;
-	DrawR(x, y, size);
+	DrawR(x, y, size, light);
 	y = y - size - 2;
-	DrawI(x, y, size);
+	DrawI(x, y, size, light);
 	y = y - size - 2;
-	DrawS(x, y, size);
+	DrawS(x, y, size, light);
 
 }
-void WriteGAMEOVER(int x, int y, int size) {
-	DrawG(x, y, size);
+void WriteGAMEOVER(int x, int y, int size, bool light) {
+	DrawG(x, y, size, light);
 	y = y - size - 2;
-	DrawA(x, y, size);
+	DrawA(x, y, size, light);
 	y = y - size - 2;
-	DrawM(x, y, size);
+	DrawM(x, y, size, light);
 	y = y - size - 2;
-	DrawE(x, y, size);
-	y = y + 3*( size + 2);
-	x = x+size+6;
-	DrawO(x, y, size);
+	DrawE(x, y, size, light);
+	y = y + 3 * (size + 2);
+	x = x + size + 6;
+	DrawO(x, y, size, light);
 	y = y - size - 2;
-	DrawV(x, y, size);
+	DrawV(x, y, size, light);
 	y = y - size - 2;
-	DrawE(x, y, size);
+	DrawE(x, y, size, light);
 	y = y - size - 2;
-	DrawR(x, y, size);
+	DrawR(x, y, size, light);
+
+}
+void WriteSETNICK(int x, int y, int size, bool light) {
+
+	DrawS(x, y, size, light);
+	y = y - size - 2;
+	DrawE(x, y, size, light);
+	y = y - size - 2;
+	DrawT(x, y, size, light);
+	y = y - size - 6;
+	DrawN(x, y, size, light);
+	y = y - size - 2;
+	DrawI(x, y, size, light);
+	y = y - size - 2;
+	DrawC(x, y, size, light);
+	y = y - size - 2;
+	DrawK(x, y, size, light);
 
 }
 //-----------
 
 //MENUs AND LOGOs
-void TETMenu(int x, int y, int size) {
-	WriteNEWGAME(x, y, size);
-	WriteRANK(x + 12, y, size);
-	WriteEXIT(x + 24, y, size);
+void TetrisMenu() {
+	int x = 50;
+	int y = 42;
+	int size = 4;
+	WriteNEWGAME(x, y, size, true);
+	WriteRANK(x + 12, y, size, true);
+	WriteEXIT(x + 24, y, size, true);
+
+	for (int i = 0; i < 48; i++) {
+		for (int j = 0; j < 48; j++) {
+			screen[i][j] = true;
+		}
+	}
+
+	WriteTETRIS(x - 44, y, size, false);
+
+	ClearChunk2(x - 28, y);
+	ClearChunk2(x - 28, y - 4);
+	ClearChunk2(x - 28, y - 8);
+	ClearChunk2(x - 24, y - 4);
+
+	ClearChunk2(x - 32, y - 30);
+	ClearChunk2(x - 28, y - 26);
+	ClearChunk2(x - 32, y - 26);
+	ClearChunk2(x - 28, y - 30);
+
+	ClearChunk2(x - 20, y - 12);
+	ClearChunk2(x - 20, y - 16);
+	ClearChunk2(x - 20, y - 20);
+	ClearChunk2(x - 20, y - 24);
+
+	ClearChunk2(x - 20, y - 32);
+	ClearChunk2(x - 16, y - 32);
+	ClearChunk2(x - 16, y - 36);
+	ClearChunk2(x - 12, y - 36);
+
+	ClearChunk2(x - 10, y - 6);
+	ClearChunk2(x - 10, y - 10);
+	ClearChunk2(x - 14, y - 10);
+	ClearChunk2(x - 14, y - 14);
 }
 void DrawSnake(int x, int y) {
 
@@ -1027,23 +1547,66 @@ void DrawSnake(int x, int y) {
 	screen[x + 17][y - 20] = true;
 
 }
-void DrawTETLogo() {
-	WriteTETRIS(18, 38, 3);
-	//DrawRectangle(15, 40, 27, 5);
-	//DrawRectangle(27, 28, 39, 16);
-}
+
 //---------------
+
+//ENGINE
+void MoveScreenDownFrom(int number) {
+
+	for (int i = number; i >= 0; i--) {
+		for (int j = 1; j <= 9; j++) {
+			if (screen[i * 5 + 13][j * 5 + 1]) {
+				ClearChunk(i * 5 + 13, j * 5 + 1);
+				DrawChunk(i * 5 + 13 + 5, j * 5 + 1);
+			}
+		}
+	}
+}
+
+void CheckHorizontal() {
+	int counter = 0;
+
+	for (int i = 0; i <= 13; i++) {
+		for (int j = 1; j <= 9; j++) {
+			if (screen[i * 5 + 13][j * 5 + 1])
+				counter++;
+		}
+
+		if (counter == 9) {
+			ClearRow(i);
+			MoveScreenDownFrom(i);
+
+			score++;
+			FillREC(0, 47, 8, 0, false);
+			ParseScore(0, 47, score);
+
+		}
+
+		counter = 0;
+
+	}
+
+	DrawTetrisBorder();
+
+}
+
+void ClearRow(int number) {
+	number = number + 1;
+	for (int j = 1; j <= 9; j++)
+		ClearChunk(number * 5 + 8, j * 5 + 1);
+}
+
+//-----------
 
 //MAIN SCREEN DRAW
 void ClearScreen() {
 	for (int i = 0; i < 84; i++) {
 		for (int j = 0; j < 48; j++) {
 			screen[i][j] = false;
+			PCD8544_DrawPixel(i, j, PCD8544_Pixel_Clear);
 
 		}
 	}
-	DrawTetrisBorder();
-	DrawScreen();
 }
 void DrawScreen() {
 	for (int i = 0; i < 84; i++) {
@@ -1055,37 +1618,279 @@ void DrawScreen() {
 
 		}
 	}
-	//DrawTetrisBorder();
 	PCD8544_Refresh();
 }
-void ClearREC(int x,int y, int x1, int y1)
-{
-	int sizeX = Abs(x-x1);
-	int sizeY = Abs(y-y1);
+void FillREC(int x, int y, int x1, int y1, bool light) {
+	int sizeX = Abs(x - x1);
+	int sizeY = Abs(y - y1);
 
-	for (int i = 0; i < sizeX; i++) {
-			for (int j = 0; j < sizeY; j++) {
-				screen[i+x][j+y1] = false;
+	for (int i = 0; i < sizeX + 1; i++) {
+		for (int j = 0; j < sizeY + 1; j++) {
+			screen[i + x][j + y1] = light;
 
-			}
 		}
+	}
 	DrawScreen();
 }
 //--------------
 
 //ZARZADZANIE FIGURAMI
 extern uint32_t TM_RNG_Get(void);
-void GameOver() {
-	gameOver = true;
-	TIM_Cmd(TIM2, DISABLE);
-	TIM_Cmd(TIM3, DISABLE);
-	ClearREC(35, 38,59,11);
-	WriteGAMEOVER(38, 36, 4);
-	WriteSCORE(0, 47, 3, 0);
+
+void DrawNumber(int x, int y, int size, int number, bool light) {
+	switch (number) {
+	case 0: {
+		Draw0(x, y, size, light);
+		break;
+	}
+	case 1: {
+		Draw1(x, y, size, light);
+		break;
+	}
+	case 2: {
+		Draw2(x, y, size, light);
+		break;
+	}
+	case 3: {
+		Draw3(x, y, size, light);
+		break;
+	}
+	case 4: {
+		Draw4(x, y, size, light);
+		break;
+	}
+	case 5: {
+		Draw5(x, y, size, light);
+		break;
+	}
+	case 6: {
+		Draw6(x, y, size, light);
+		break;
+	}
+	case 7: {
+		Draw7(x, y, size, light);
+		break;
+	}
+	case 8: {
+		Draw8(x, y, size, light);
+		break;
+	}
+	case 9: {
+		Draw9(x, y, size, light);
+		break;
+	}
+	}
 
 }
-void MoveRight(int x, int y, int shape) //shape (0-18)
+void ParseScore(int x, int y, int number) {
+
+	int t, s, d, j;
+
+	t = number / 1000;
+	s = (number - t * 1000) / 100;
+	d = (number - t * 1000 - s * 100) / 10;
+	j = (number - t * 1000 - s * 100 - d * 10);
+
+	int size = 3;
+	DrawS(x, y, size, true);
+	y = y - size - 2;
+	DrawC(x, y, size, true);
+	y = y - size - 2;
+	DrawO(x, y, size, true);
+	y = y - size - 2;
+	DrawR(x, y, size, true);
+	y = y - size - 2;
+	DrawE(x, y, size, true);
+	y = y - size - 1;
+	DrawDoubleDot(x, y);
+	y = y - size - 1;
+
+	switch (t) {
+	case 0: {
+		Draw0(x, y, size, true);
+		break;
+	}
+	case 1: {
+		Draw1(x, y, size, true);
+		break;
+	}
+	case 2: {
+		Draw2(x, y, size, true);
+		break;
+	}
+	case 3: {
+		Draw3(x, y, size, true);
+		break;
+	}
+	case 4: {
+		Draw4(x, y, size, true);
+		break;
+	}
+	case 5: {
+		Draw5(x, y, size, true);
+		break;
+	}
+	case 6: {
+		Draw6(x, y, size, true);
+		break;
+	}
+	case 7: {
+		Draw7(x, y, size, true);
+		break;
+	}
+	case 8: {
+		Draw8(x, y, size, true);
+		break;
+	}
+	case 9: {
+		Draw9(x, y, size, true);
+		break;
+	}
+
+	}
+	y = y - size - 2;
+//---------------------------------
+	switch (s) {
+	case 0: {
+		Draw0(x, y, size, true);
+		break;
+	}
+	case 1: {
+		Draw1(x, y, size, true);
+		break;
+	}
+	case 2: {
+		Draw2(x, y, size, true);
+		break;
+	}
+	case 3: {
+		Draw3(x, y, size, true);
+		break;
+	}
+	case 4: {
+		Draw4(x, y, size, true);
+		break;
+	}
+	case 5: {
+		Draw5(x, y, size, true);
+		break;
+	}
+	case 6: {
+		Draw6(x, y, size, true);
+		break;
+	}
+	case 7: {
+		Draw7(x, y, size, true);
+		break;
+	}
+	case 8: {
+		Draw8(x, y, size, true);
+		break;
+	}
+	case 9: {
+		Draw9(x, y, size, true);
+		break;
+	}
+
+	}
+	y = y - size - 2;
+//--------------------------
+	switch (d) {
+	case 0: {
+		Draw0(x, y, size, true);
+		break;
+	}
+	case 1: {
+		Draw1(x, y, size, true);
+		break;
+	}
+	case 2: {
+		Draw2(x, y, size, true);
+		break;
+	}
+	case 3: {
+		Draw3(x, y, size, true);
+		break;
+	}
+	case 4: {
+		Draw4(x, y, size, true);
+		break;
+	}
+	case 5: {
+		Draw5(x, y, size, true);
+		break;
+	}
+	case 6: {
+		Draw6(x, y, size, true);
+		break;
+	}
+	case 7: {
+		Draw7(x, y, size, true);
+		break;
+	}
+	case 8: {
+		Draw8(x, y, size, true);
+		break;
+	}
+	case 9: {
+		Draw9(x, y, size, true);
+		break;
+	}
+
+	}
+	y = y - size - 2;
+//-----------------------
+	switch (j) {
+	case 0: {
+		Draw0(x, y, size, true);
+		break;
+	}
+	case 1: {
+		Draw1(x, y, size, true);
+		break;
+	}
+	case 2: {
+		Draw2(x, y, size, true);
+		break;
+	}
+	case 3: {
+		Draw3(x, y, size, true);
+		break;
+	}
+	case 4: {
+		Draw4(x, y, size, true);
+		break;
+	}
+	case 5: {
+		Draw5(x, y, size, true);
+		break;
+	}
+	case 6: {
+		Draw6(x, y, size, true);
+		break;
+	}
+	case 7: {
+		Draw7(x, y, size, true);
+		break;
+	}
+	case 8: {
+		Draw8(x, y, size, true);
+		break;
+	}
+	case 9: {
+		Draw9(x, y, size, true);
+		break;
+	}
+
+	}
+
+}
+
+void MoveRight() //shape (0-18)
 {
+	int x = current[0][0];
+	int y = current[1][0];
+
 	switch (shape) {
 
 	case 0: //kwadrat
@@ -1612,8 +2417,11 @@ void MoveRight(int x, int y, int shape) //shape (0-18)
 	}
 }
 
-void MoveLeft(int x, int y, int shape) //shape (0-18)
+void MoveLeft() //shape (0-18)
 {
+	int x = current[0][0];
+	int y = current[1][0];
+
 	switch (shape) {
 	case 0: //kwadrat
 	{
@@ -2132,8 +2940,10 @@ void MoveLeft(int x, int y, int shape) //shape (0-18)
 	}
 }
 
-void MoveDown(int x, int y, int shape) //shape (0-18)
+void MoveDown() //shape (0-18)
 {
+	int x = current[0][0];
+	int y = current[1][0];
 	switch (shape) {
 	case 0: //kwadrat
 	{
@@ -2162,7 +2972,9 @@ void MoveDown(int x, int y, int shape) //shape (0-18)
 	}
 	case 1: //prostokat poziomy
 	{
-		if (!screen[x + z + 1][y]) {
+		if (!screen[x + z + 1][y] && !screen[x + z + 1][y - z - 1]
+				&& !screen[x + z + 1][y - 2 * (z + 1)]
+				&& !screen[x + z + 1][y - 3 * (z + 1)]) {
 			collision = false;
 			ClearChunk(x, y);
 			ClearChunk(x, y - 1 * (z + 1));
@@ -2672,13 +3484,48 @@ void MoveDown(int x, int y, int shape) //shape (0-18)
 
 }
 
-void SpawnBlock(int x, int y) {
+void SpawnBlock() {
+	int x = 13;
+	int y = 31;
+	int rShape = TM_RNG_Get() % 7;
+
+	while (rShape > 6) {
+		rShape = rShape / 2;
+
+	}
+	if (rShape < 0)
+		rShape = 0;
+	switch (rShape) {
+
+	case 0:
+		shape = 0;
+		break;
+	case 1:
+		shape = 1;
+		break;
+	case 2:
+		shape = 3;
+		break;
+	case 3:
+		shape = 7;
+		break;
+	case 4:
+		shape = 11;
+		break;
+	case 5:
+		shape = 15;
+		break;
+	case 6:
+		shape = 17;
+		break;
+	}
+	//shape = 5;
 	switch (shape) {
 	case 0: {
 		if (screen[x][y] == true || screen[x][y - z - 1] == true
 				|| screen[x + z + 1][y] == true
 				|| screen[x + z + 1][y - z - 1] == true)
-			GameOver();
+			gameOver = true;
 
 		DrawShapeSquare(x, y);
 		break;
@@ -2687,7 +3534,7 @@ void SpawnBlock(int x, int y) {
 		if (screen[x][y] == true || screen[x][y - z - 1] == true
 				|| screen[x][y - 2 * (z + 1)] == true
 				|| screen[x][y - 3 * (z + 1)] == true)
-			GameOver();
+			gameOver = true;
 
 		DrawShapeRectangleH(x, y);
 		break;
@@ -2697,7 +3544,7 @@ void SpawnBlock(int x, int y) {
 		if (screen[x][y] == true || screen[x + z + 1][y] == true
 				|| screen[x + 2 * (z + 1)][y] == true
 				|| screen[x + 3 * (z + 1)][y] == true)
-			GameOver();
+			gameOver = true;
 
 		DrawShapeRectangleV(x, y);
 		break;
@@ -2706,7 +3553,7 @@ void SpawnBlock(int x, int y) {
 		if (screen[x][y] == true || screen[x][y - z - 1] == true
 				|| screen[x][y - 2 * (z + 1)] == true
 				|| screen[x - z - 1][y - 2 * (z + 1)] == true)
-			GameOver();
+			gameOver = true;
 
 		DrawShapeLH(x, y);
 		break;
@@ -2716,7 +3563,7 @@ void SpawnBlock(int x, int y) {
 		if (screen[x][y] == true || screen[x][y - z - 1] == true
 				|| screen[x][y - 2 * (z + 1)] == true
 				|| screen[x - z - 1][y] == true)
-			GameOver();
+			gameOver = true;
 
 		DrawShapeLHInv(x, y);
 		break;
@@ -2726,7 +3573,7 @@ void SpawnBlock(int x, int y) {
 		if (screen[x][y] == true || screen[x][y - z - 1] == true
 				|| screen[x][y - 2 * (z + 1)] == true
 				|| screen[x + z + 1][y - 2 * (z + 1)] == true)
-			GameOver();
+			gameOver = true;
 
 		DrawShapeLHMir(x, y);
 		break;
@@ -2736,7 +3583,7 @@ void SpawnBlock(int x, int y) {
 		if (screen[x][y] == true || screen[x][y - z - 1] == true
 				|| screen[x][y - 2 * (z + 1)] == true
 				|| screen[x + z + 1][y] == true)
-			GameOver();
+			gameOver = true;
 
 		DrawShapeLHInvMir(x, y);
 		break;
@@ -2746,7 +3593,7 @@ void SpawnBlock(int x, int y) {
 		if (screen[x][y] == true || screen[x + z + 1][y] == true
 				|| screen[x + 2 * (z + 1)][y] == true
 				|| screen[x + 2 * (z + 1)][y - z - 1] == true)
-			GameOver();
+			gameOver = true;
 
 		DrawShapeLV(x, y);
 		break;
@@ -2756,7 +3603,7 @@ void SpawnBlock(int x, int y) {
 		if (screen[x][y] == true || screen[x + z + 1][y] == true
 				|| screen[x + 2 * (z + 1)][y] == true
 				|| screen[x + 2 * (z + 1)][y + z + 1] == true)
-			GameOver();
+			gameOver = true;
 
 		DrawShapeLVInv(x, y);
 		break;
@@ -2766,7 +3613,7 @@ void SpawnBlock(int x, int y) {
 		if (screen[x][y] == true || screen[x + z + 1][y] == true
 				|| screen[x + 2 * (z + 1)][y] == true
 				|| screen[x][y - z - 1] == true)
-			GameOver();
+			gameOver = true;
 
 		DrawShapeLVMir(x, y);
 		break;
@@ -2776,7 +3623,7 @@ void SpawnBlock(int x, int y) {
 		if (screen[x][y] == true || screen[x + z + 1][y] == true
 				|| screen[x + 2 * (z + 1)][y] == true
 				|| screen[x][y + z + 1] == true)
-			GameOver();
+			gameOver = true;
 
 		DrawShapeLVInvMir(x, y);
 		break;
@@ -2787,7 +3634,7 @@ void SpawnBlock(int x, int y) {
 		if (screen[x][y] == true || screen[x][y - z - 1] == true
 				|| screen[x][y - 2 * (z + 1)] == true
 				|| screen[x + z + 1][y - z - 1] == true)
-			GameOver();
+			gameOver = true;
 
 		DrawShapeTH(x, y);
 		break;
@@ -2797,7 +3644,7 @@ void SpawnBlock(int x, int y) {
 		if (screen[x][y] == true || screen[x][y - z - 1] == true
 				|| screen[x][y - 2 * (z + 1)] == true
 				|| screen[x - z - 1][y - z - 1] == true)
-			GameOver();
+			gameOver = true;
 
 		DrawShapeTHInv(x, y);
 		break;
@@ -2807,7 +3654,7 @@ void SpawnBlock(int x, int y) {
 		if (screen[x][y] == true || screen[x + z + 1][y] == true
 				|| screen[x + 2 * (z + 1)][y] == true
 				|| screen[x + z + 1][y - z - 1] == true)
-			GameOver();
+			gameOver = true;
 
 		DrawShapeTV(x, y);
 		break;
@@ -2817,7 +3664,7 @@ void SpawnBlock(int x, int y) {
 		if (screen[x][y] == true || screen[x + z + 1][y] == true
 				|| screen[x + 2 * (z + 1)][y] == true
 				|| screen[x + z + 1][y + z + 1] == true)
-			GameOver();
+			gameOver = true;
 
 		DrawShapeTVInv(x, y);
 		break;
@@ -2827,7 +3674,7 @@ void SpawnBlock(int x, int y) {
 		if (screen[x][y] == true || screen[x][y - z - 1] == true
 				|| screen[x + z + 1][y - 2 * (z + 1)] == true
 				|| screen[x + z + 1][y - z - 1] == true)
-			GameOver();
+			gameOver = true;
 
 		DrawShapeZH(x, y);
 		break;
@@ -2837,7 +3684,7 @@ void SpawnBlock(int x, int y) {
 		if (screen[x + z + 1][y] == true || screen[x][y - z - 1] == true
 				|| screen[x][y - 2 * (z + 1)] == true
 				|| screen[x + z + 1][y - z - 1] == true)
-			GameOver();
+			gameOver = true;
 
 		DrawShapeZHInv(x, y);
 		break;
@@ -2847,7 +3694,7 @@ void SpawnBlock(int x, int y) {
 		if (screen[x][y] == true || screen[x][y - z - 1] == true
 				|| screen[x + z + 1][y] == true
 				|| screen[x - z - 1][y - z - 1] == true)
-			GameOver();
+			gameOver = true;
 
 		DrawShapeZV(x, y);
 		break;
@@ -2857,7 +3704,7 @@ void SpawnBlock(int x, int y) {
 		if (screen[x][y] == true || screen[x - z - 1][y] == true
 				|| screen[x][y - z - 1] == true
 				|| screen[x + z + 1][y - z - 1] == true)
-			GameOver();
+			gameOver = true;
 
 		DrawShapeZVInv(x, y);
 		break;
@@ -2886,7 +3733,7 @@ void Turn() {
 				&& screen[x + 3 * (z + 1)][y] != true) {
 			shape = 2;
 			tmpx = current[0][0];
-			tmpy = current[1][2];
+			tmpy = current[1][0];
 
 			//czyszczenie miejsca obecnego
 			ClearChunk(current[0][0], current[1][0]);
@@ -2914,7 +3761,7 @@ void Turn() {
 			ClearChunk(current[0][2], current[1][2]);
 			ClearChunk(current[0][3], current[1][3]);
 
-			DrawShapeRectangleH(tmpx, tmpy + 2 * (z + 1));
+			DrawShapeRectangleH(tmpx, tmpy);
 
 		}
 		break;
