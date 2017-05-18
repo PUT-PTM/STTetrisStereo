@@ -29,7 +29,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx.h"
-
+#include "tm_stm32f4_rng.h"
 /** @addtogroup STM32F4xx_StdPeriph_Driver
   * @{
   */

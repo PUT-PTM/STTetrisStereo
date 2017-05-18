@@ -11,7 +11,7 @@
 #include "stm32f4xx_syscfg.h"
 #include "tm_stm32f4_pcd8544.h"
 
-#include <TetrisLogic.h>
+#include <alfabet.h>
 
 extern bool screen[84][48];
 extern int current[2][4];
@@ -21,8 +21,9 @@ extern bool gameOver;
 extern int score;
 extern const u8 music[102050];
 
-bool spawn = true, end = false, movement = false;
-bool button1 = false, button2 = false, button3 = false, button4 = false;
+bool right = false, left = false, down = false, turn = false, next = false,
+		prev = false, select = false, back = false, func = false, spawn = true,
+		end = false, movement = true;
 
 int choice = 0;
 int choiceX = 50;
@@ -35,7 +36,6 @@ int actualNick;
 int a1 = 1, a2 = 2, a3 = 3, a4 = 4;
 int letterPos = 35;
 
-// Buttons Ports: PA2, PA3,PA5,PB1
 void INITSYS() {
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
@@ -140,19 +140,62 @@ void INITSYS() {
 	PCD8544_Refresh();
 }
 
-void TetrisButtons() { // Buttons Handling
+void TetrisButtons() { //left, right, down, turn
 	if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_2) == 0) {
 		GPIO_SetBits(GPIOD, GPIO_Pin_12); //instrukcja do wykonania kiedy wcisniety
 
-		button1 = true;
+		right = true;
 		TIM_Cmd(TIM2, ENABLE);
 	} else {
+		//right = false;
 		GPIO_ResetBits(GPIOD, GPIO_Pin_12);
 	}
 
 	if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_3) == 0) {
 
-		button2 = true;
+		left = true;
+		TIM_Cmd(TIM2, ENABLE);
+		GPIO_SetBits(GPIOD, GPIO_Pin_13);
+	} else {
+		//left = false;
+		GPIO_ResetBits(GPIOD, GPIO_Pin_13);
+	}
+
+	if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_5) == 0) {
+
+		down = true;
+		TIM_Cmd(TIM2, ENABLE);
+		GPIO_SetBits(GPIOD, GPIO_Pin_14);
+	} else {
+		//down = false;
+		GPIO_ResetBits(GPIOD, GPIO_Pin_14);
+	}
+	if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_1) == 0) {
+
+		turn = true;
+		TIM_Cmd(TIM2, ENABLE);
+		GPIO_SetBits(GPIOD, GPIO_Pin_15);
+	} else {
+		//turn = false;
+		GPIO_ResetBits(GPIOD, GPIO_Pin_15);
+	}
+
+}
+
+void MenuButtons() { // select, next, prev, func, back
+	if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_2) == 0) {
+
+		select = true;
+		TIM_Cmd(TIM2, ENABLE);
+		GPIO_SetBits(GPIOD, GPIO_Pin_13);
+	} else {
+
+		GPIO_ResetBits(GPIOD, GPIO_Pin_13);
+	}
+
+	if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_3) == 0) {
+
+		next = true;
 		TIM_Cmd(TIM2, ENABLE);
 		GPIO_SetBits(GPIOD, GPIO_Pin_13);
 	} else {
@@ -161,8 +204,7 @@ void TetrisButtons() { // Buttons Handling
 	}
 
 	if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_5) == 0) {
-
-		button3 = true;
+		prev = true;
 		TIM_Cmd(TIM2, ENABLE);
 		GPIO_SetBits(GPIOD, GPIO_Pin_14);
 	} else {
@@ -170,218 +212,25 @@ void TetrisButtons() { // Buttons Handling
 		GPIO_ResetBits(GPIOD, GPIO_Pin_14);
 	}
 	if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_1) == 0) {
-
-		button4 = true;
+		func = true;
 		TIM_Cmd(TIM2, ENABLE);
 		GPIO_SetBits(GPIOD, GPIO_Pin_15);
 	} else {
+
 		GPIO_ResetBits(GPIOD, GPIO_Pin_15);
 	}
+//	if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_7) == 0) {
+	//	back = true;
+	//	TIM_Cmd(TIM2, ENABLE);
+	//	GPIO_SetBits(GPIOD, GPIO_Pin_15);
+	//} else {
+//
+	//	GPIO_ResetBits(GPIOD, GPIO_Pin_15);
+	//}
 
 }
 
-void TIM2_IRQHandler(void) { //Movements Handling
-
-	if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET) {
-
-		if (movement) {
-			if (button1) {
-				MoveRight();
-				button1 = false;
-			}
-
-			if (button2) {
-				MoveLeft();
-				button2 = false;
-
-			}
-
-			if (button3) {
-				MoveDown();
-				button3 = false;
-			}
-			if (button4) {
-				Turn();
-				button4 = false;
-			}
-
-		} else {
-			if (button2) {
-
-				if (choice == 0) {
-					DrawPointer(choiceX, 47, 3, false);
-					if (choiceX == 74)
-						choiceX = 50;
-					else
-						choiceX += 12;
-					DrawPointer(choiceX, 47, 3, true);
-				} else if (choice == 1) {
-					switch (letterSelect) {
-					case 0: {
-						FillREC(50, letterPos, 58, letterPos - 4, false);
-
-						a1++;
-						if (a1 == 27)
-							a1 = 1;
-
-						DrawLetter(50, letterPos, 4, a1, true);
-
-						break;
-					}
-					case 1: {
-						FillREC(50, letterPos - 6, 58, letterPos - 10, false);
-						a2++;
-						if (a2 == 27)
-							a2 = 1;
-
-						DrawLetter(50, letterPos - 6, 4, a2, true);
-						break;
-					}
-					case 2: {
-						FillREC(50, letterPos - 12, 58, letterPos - 16, false);
-						a3++;
-						if (a3 == 27)
-							a3 = 1;
-						DrawLetter(50, letterPos - 12, 4, a3, true);
-						break;
-					}
-					case 3: {
-						FillREC(50, letterPos - 18, 58, letterPos - 22, false);
-						a4++;
-						if (a4 == 27)
-							a4 = 1;
-
-						DrawLetter(50, letterPos - 18, 4, a4, true);
-						break;
-					}
-					}
-
-				}
-				DrawScreen();
-				button2 = false;
-
-			}
-			if (button3) {
-
-				if (choice == 0) {
-					DrawPointer(choiceX, 47, 3, false);
-					if (choiceX == 50)
-						choiceX = 74;
-					else
-						choiceX -= 12;
-
-					DrawPointer(choiceX, 47, 3, true);
-				} else if (choice == 1) {
-					switch (letterSelect) {
-					case 0:
-						FillREC(50, letterPos, 58, letterPos - 4, false);
-						a1--;
-						if (a1 == 0)
-							a1 = 26;
-						DrawLetter(50, letterPos, 4, a1, true);
-						break;
-					case 1:
-						FillREC(50, letterPos - 6, 58, letterPos - 10, false);
-						a2--;
-						if (a2 == 0)
-							a2 = 26;
-						DrawLetter(50, letterPos - 6, 4, a2, true);
-						break;
-					case 2:
-						FillREC(50, letterPos - 12, 58, letterPos - 16, false);
-						a3--;
-						if (a3 == 0)
-							a3 = 26;
-						DrawLetter(50, letterPos - 12, 4, a3, true);
-						break;
-					case 3:
-						FillREC(50, letterPos - 18, 58, letterPos - 22, false);
-						a4--;
-						if (a4 == 0)
-							a4 = 26;
-						DrawLetter(50, letterPos - 18, 4, a4, true);
-						break;
-					}
-				}
-				DrawScreen();
-				button3 = false;
-			}
-
-			if (button1) {
-				if (choice == 0) {
-
-					if (choiceX == 50)
-						choice = 1;
-					if (choiceX == 62)
-						choice = 3;
-					if (choiceX == 74)
-						choice = 5;
-				}
-
-				button1 = false;
-
-			}
-
-			if (button4) {
-				if (choice == 1) {
-
-					switch (letterSelect) {
-
-					case 0: {
-
-						DrawChangePointerUP(50, letterPos, 4, false);
-						DrawChangePointerDOWN(50, letterPos, 4, false);
-						letterSelect = 1;
-
-						DrawChangePointerUP(50, letterPos - 6, 4, true);
-						DrawChangePointerDOWN(50, letterPos - 6, 4, true);
-						break;
-					}
-					case 1: {
-						DrawChangePointerUP(50, letterPos - 6, 4, false);
-						DrawChangePointerDOWN(50, letterPos - 6, 4, false);
-						letterSelect = 2;
-						DrawChangePointerUP(50, letterPos - 12, 4, true);
-						DrawChangePointerDOWN(50, letterPos - 12, 4, true);
-						break;
-					}
-					case 2: {
-						DrawChangePointerUP(50, letterPos - 12, 4, false);
-						DrawChangePointerDOWN(50, letterPos - 12, 4, false);
-						letterSelect = 3;
-						DrawChangePointerUP(50, letterPos - 18, 4, true);
-						DrawChangePointerDOWN(50, letterPos - 18, 4, true);
-						break;
-					}
-					case 3: {
-						DrawChangePointerUP(50, letterPos - 18, 4, false);
-						DrawChangePointerDOWN(50, letterPos - 18, 4, false);
-
-						letterSelect = 0;
-
-						DrawChangePointerUP(50, letterPos, 4, true);
-						DrawChangePointerDOWN(50, letterPos, 4, true);
-						break;
-					}
-
-					}
-				}
-
-				DrawScreen();
-				button4 = false;
-			}
-
-		}
-
-		DrawScreen();
-
-		TIM_Cmd(TIM2, DISABLE);
-		TIM_SetCounter(TIM2, 0);
-		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
-	}
-}
-
-void TIM3_IRQHandler(void) { // Tetris Main Loop
+void TIM3_IRQHandler(void) { // Tetris Game Main Loop
 	if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET) {
 
 		if (spawn) {
@@ -419,7 +268,203 @@ void TIM3_IRQHandler(void) { // Tetris Main Loop
 	}
 }
 
-void TIM5_IRQHandler(void) { //Music Loop
+void TIM2_IRQHandler(void) {
+	if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET) {
+
+		if (right) {
+			MoveRight();
+			right = false;
+
+		}
+
+		if (left) {
+			MoveLeft();
+			left = false;
+
+		}
+		if (down) {
+			MoveDown();
+			down = false;
+		}
+		if (turn) {
+			Turn();
+			turn = false;
+		}
+
+		if (next) {
+
+			if (choice == 0) {
+				ClearPointer(choiceX, 47, 3);
+				if (choiceX == 74)
+					choiceX = 50;
+				else
+					choiceX += 12;
+				DrawPointer(choiceX, 47, 3);
+			} else if (choice == 1) {
+				switch (letterSelect) {
+				case 0: {
+					FillREC(50, letterPos, 58, letterPos - 4, false);
+
+					a1++;
+					if (a1 == 27)
+						a1 = 1;
+
+					DrawLetter(50, letterPos, 4, a1, true);
+
+					break;
+				}
+				case 1: {
+					FillREC(50, letterPos - 6, 58, letterPos - 10, false);
+					a2++;
+					if (a2 == 27)
+						a2 = 1;
+
+					DrawLetter(50, letterPos - 6, 4, a2, true);
+					break;
+				}
+				case 2: {
+					FillREC(50, letterPos - 12, 58, letterPos - 16, false);
+					a3++;
+					if (a3 == 27)
+						a3 = 1;
+					DrawLetter(50, letterPos - 12, 4, a3, true);
+					break;
+				}
+				case 3: {
+					FillREC(50, letterPos - 18, 58, letterPos - 22, false);
+					a4++;
+					if (a4 == 27)
+						a4 = 1;
+
+					DrawLetter(50, letterPos - 18, 4, a4, true);
+					break;
+				}
+				}
+
+			}
+			DrawScreen();
+			next = false;
+
+		}
+		if (prev) {
+
+			if (choice == 0) {
+				ClearPointer(choiceX, 47, 3);
+				if (choiceX == 50)
+					choiceX = 74;
+				else
+					choiceX -= 12;
+
+				DrawPointer(choiceX, 47, 3);
+			} else if (choice == 1) {
+				switch (letterSelect) {
+				case 0:
+					FillREC(50, letterPos, 58, letterPos - 4, false);
+					a1--;
+					if (a1 == 0)
+						a1 = 26;
+					DrawLetter(50, letterPos, 4, a1, true);
+					break;
+				case 1:
+					FillREC(50, letterPos - 6, 58, letterPos - 10, false);
+					a2--;
+					if (a2 == 0)
+						a2 = 26;
+					DrawLetter(50, letterPos - 6, 4, a2, true);
+					break;
+				case 2:
+					FillREC(50, letterPos - 12, 58, letterPos - 16, false);
+					a3--;
+					if (a3 == 0)
+						a3 = 26;
+					DrawLetter(50, letterPos - 12, 4, a3, true);
+					break;
+				case 3:
+					FillREC(50, letterPos - 18, 58, letterPos - 22, false);
+					a4--;
+					if (a4 == 0)
+						a4 = 26;
+					DrawLetter(50, letterPos - 18, 4, a4, true);
+					break;
+				}
+			}
+			DrawScreen();
+			prev = false;
+		}
+
+		if (select) {
+			if (choice == 0) {
+
+				if (choiceX == 50)
+					choice = 1;
+				if (choiceX == 62)
+					choice = 3;
+				if (choiceX == 74)
+					choice = 5;
+			}
+
+			select = false;
+
+		}
+
+		if (func) {
+			if (choice == 1) {
+
+				switch (letterSelect) {
+
+				case 0: {
+
+					ClearChangePointerUP(50, letterPos, 4);
+					ClearChangePointerDOWN(50, letterPos, 4);
+					letterSelect = 1;
+
+					DrawChangePointerUP(50, letterPos - 6, 4);
+					DrawChangePointerDOWN(50, letterPos - 6, 4);
+					break;
+				}
+				case 1: {
+					ClearChangePointerUP(50, letterPos - 6, 4);
+					ClearChangePointerDOWN(50, letterPos - 6, 4);
+					letterSelect = 2;
+					DrawChangePointerUP(50, letterPos - 12, 4);
+					DrawChangePointerDOWN(50, letterPos - 12, 4);
+					break;
+				}
+				case 2: {
+					ClearChangePointerUP(50, letterPos - 12, 4);
+					ClearChangePointerDOWN(50, letterPos - 12, 4);
+					letterSelect = 3;
+					DrawChangePointerUP(50, letterPos - 18, 4);
+					DrawChangePointerDOWN(50, letterPos - 18, 4);
+					break;
+				}
+				case 3: {
+					ClearChangePointerUP(50, letterPos - 18, 4);
+					ClearChangePointerDOWN(50, letterPos - 18, 4);
+
+					letterSelect = 0;
+
+					DrawChangePointerUP(50, letterPos, 4);
+					DrawChangePointerDOWN(50, letterPos, 4);
+					break;
+				}
+
+				}
+			}
+
+			DrawScreen();
+			func = false;
+		}
+
+		DrawScreen();
+
+		TIM_Cmd(TIM2, DISABLE);
+		TIM_SetCounter(TIM2, 0);
+		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+	}
+}
+
+void TIM5_IRQHandler(void) {
 	if (TIM_GetITStatus(TIM5, TIM_IT_Update) != RESET) {
 
 		DAC_SetChannel1Data(DAC_Align_12b_R, music[soundPlayer]);
@@ -446,8 +491,8 @@ int main(void) {
 		case 0: { //Main Menu
 
 			TetrisMenu();
-			DrawPointer(choiceX, 47, 3, true);
-			TetrisButtons();
+			DrawPointer(choiceX, 47, 3);
+			MenuButtons();
 			DrawScreen();
 
 			break;
@@ -457,7 +502,7 @@ int main(void) {
 		case 1: { //Nick Menu
 
 			ClearScreen();
-			DrawPointer(choiceX, 47, 3, false);
+			ClearPointer(choiceX, 47, 3);
 			FillREC(0, 0, 83, 47, false);
 			WriteSETNICK(20, 45, 4, true);
 			DrawLetter(50, letterPos, 4, a1, true);
@@ -467,12 +512,12 @@ int main(void) {
 
 			letterSelect = 0;
 
-			DrawChangePointerUP(50, letterPos, 4, true);
-			DrawChangePointerDOWN(50, letterPos, 4, true);
+			DrawChangePointerUP(50, letterPos, 4);
+			DrawChangePointerDOWN(50, letterPos, 4);
 			DrawScreen();
-			while (!button1) {
+			while (!select) {
 
-				TetrisButtons();
+				MenuButtons();
 			}
 
 			actualNick = a1 * 1000000 + a2 * 10000 + a3 * 100 + a4;
@@ -487,8 +532,8 @@ int main(void) {
 
 			ParseScore(0, 47, 0000);
 			WriteFUNCTOSTART(38, 42, 4, true);
-			while (!button4) {
-				TetrisButtons();
+			while (!func) {
+				MenuButtons();
 
 			}
 			ClearScreen();
@@ -506,22 +551,21 @@ int main(void) {
 				if (movement)
 					TetrisButtons();
 			}
-
+			spawn = true;
 			TIM_Cmd(TIM3, DISABLE);
 			TIM_Cmd(TIM5, DISABLE);
-			spawn = true;
-			movement = false;
+
 			FillREC(35, 38, 59, 11, false);
 			WriteGAMEOVER(38, 36, 4, true);
 			DrawScreen();
 
-			if (score > 0)
-				AddToRank(score, actualNick);
+			if(score>0)
+			AddToRank(score,actualNick);
 
 			score = 0;
-			actualNick = 0;
-			while (!button4) {
-				TetrisButtons();
+			actualNick=0;
+			while (!func) {
+				MenuButtons();
 
 			}
 
@@ -537,8 +581,9 @@ int main(void) {
 
 			DrawRank();
 
-			while (!button4) {
-				TetrisButtons();
+			while (!func) {
+				MenuButtons();
+
 			}
 
 			ClearScreen();

@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<history>
+   <processor signature="5.4.1 -mcpu=cortex-m4 -mthumb -g -nostartfiles -Map=Tetris32.map -O0 --gc-sections -LC:\CooCox\CoIDE\configuration\ProgramData\Tetris32 -TC:\CooCox\CoIDE\configuration\ProgramData\Tetris32/arm-gcc-link.ld -g">
+      <target file="Tetris32.elf" lastModified="15c172b50c1">
+         <source file="..\obj\stm32f4xx_syscfg.o" lastModified="15c129610bb"/>
+         <source file="..\obj\TetrisLogic.o" lastModified="15c172b4ef6"/>
+         <source file="..\obj\stm32f4xx_dac.o" lastModified="15c129610fc"/>
+         <source file="..\obj\music.o" lastModified="15c1296128b"/>
+         <source file="..\obj\startup_stm32f4xx.o" lastModified="15c129612a7"/>
+         <source file="..\obj\main.o" lastModified="15c172415f4"/>
+         <source file="..\obj\stm32f4xx_rcc.o" lastModified="15c129613f9"/>
+         <source file="..\obj\tm_stm32f4_spi.o" lastModified="15c12961435"/>
+         <source file="..\obj\tm_stm32f4_rng.o" lastModified="15c1296145e"/>
+         <source file="..\obj\stm32f4xx_gpio.o" lastModified="15c1296148e"/>
+         <source file="..\obj\system_stm32f4xx.o" lastModified="15c129614b5"/>
+         <source file="..\obj\stm32f4xx_spi.o" lastModified="15c129614ee"/>
+         <source file="..\obj\misc.o" lastModified="15c12961514"/>
+         <source file="..\obj\tm_stm32f4_gpio.o" lastModified="15c12961546"/>
+         <source file="..\obj\stm32f4xx_tim.o" lastModified="15c129615b2"/>
+         <source file="..\obj\tm_stm32f4_pcd8544.o" lastModified="15c129615f7"/>
+      </target>
+   </processor>
+</history>
