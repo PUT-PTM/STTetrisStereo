@@ -9,6 +9,7 @@ int shape = -1;
 bool collision = false;
 bool gameOver = false;
 int score = 0;
+bool soundCheck = false;
 long int rank[7][2] = { 0 };
 
 //Funkcje matematyczne
@@ -216,22 +217,25 @@ void DrawJ(int x, int y, int size, bool light) {
 	for (int i = 0; i < size * 2 + 1; i++)
 		screen[x + i][y - size] = light;
 
-	for (int i = 0; i < size; i++) {
+	for (int i = 0; i < size; i++)
 		screen[x + size * 2][y - size + i] = light;
+	for (int i = 0; i < size; i++)
 		screen[x + size + i][y] = light;
-	}
-
 }
 void DrawK(int x, int y, int size, bool light) {
-
+	//5
 	for (int i = 0; i < size + 1; i++)
 		screen[x + size + i][y] = light;
 
-	for (int i = 0; i < size; i++) {
+	//6
+	for (int i = 0; i < size; i++)
 		screen[x + i][y] = light;
+
+	for (int i = 0; i < size; i++)
 		screen[x + size - i][y - i] = light;
+
+	for (int i = 0; i < size; i++)
 		screen[x + size + i][y - i] = light;
-	}
 
 	screen[x][y - size] = light;
 	screen[x + (size * 2)][y - size] = light;
@@ -245,88 +249,87 @@ void DrawL(int x, int y, int size, bool light) {
 }
 void DrawM(int x, int y, int size, bool light) {
 	if (size == 2) {
-		for (int i = 0; i < size * 2 + 1; i++) {
+		for (int i = 0; i < size * 2 + 1; i++)
 			screen[x + i][y] = light;
+
+		for (int i = 0; i < size * 2 + 1; i++)
 			screen[x + i][y - size] = light;
-		}
 
 		screen[x + 1][y - size + 1] = light;
 
 	} else {
-		for (int i = 0; i < size * 2 + 1; i++) {
+		for (int i = 0; i < size * 2 + 1; i++)
 			screen[x + i][y] = light;
-			screen[x + i][y - size] = light;
-		}
 
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < size * 2 + 1; i++)
+			screen[x + i][y - size] = light;
+
+		for (int i = 0; i < 3; i++)
 			screen[x + i][y - 1] = light;
+		for (int i = 0; i < 3; i++)
 			screen[x + i + 3][y - 2] = light;
+		for (int i = 0; i < 3; i++)
 			screen[x + i][y - 3] = light;
-		}
 
 	}
 
 }
 void DrawN(int x, int y, int size, bool light) {
-
 	if (size == 2) {
-		for (int i = 0; i < size * 2 + 1; i++) {
+		for (int i = 0; i < size * 2 + 1; i++)
 			screen[x + i][y] = light;
+		for (int i = 0; i < size * 2 + 1; i++)
 			screen[x + i][y - size] = light;
-		}
-
 		screen[x][y - 1] = light;
-
 	} else {
-
-		for (int i = 0; i < size + 1; i++) {
+		for (int i = 0; i < size + 1; i++)
 			screen[x + size + i][y] = light;
-			screen[x + size + i][y - size] = light;
-		}
 
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < size; i++)
 			screen[x + i][y] = light;
+
+		for (int i = 0; i < size + 1; i++)
 			screen[x + i][y - size] = light;
-		}
 
-		for (int i = 0; i < size - 1; i++) {
+		for (int i = 0; i < size + 1; i++)
+			screen[x + size + i][y - size] = light;
+
+		for (int i = 0; i < size - 1; i++)
 			screen[x + i][y - 1] = light;
-
+		for (int i = 0; i < size - 1; i++)
 			screen[x + 3 + i][y - 2] = light;
-
+		for (int i = 0; i < size - 1; i++)
 			screen[x + 6 + i][y - 3] = light;
-		}
 
 	}
 
 }
 void DrawO(int x, int y, int size, bool light) {
+	for (int i = 0; i < size + 1; i++)
+		screen[x][y - i] = light;
 
-	for (int i = 0; i < size * 2 + 1; i++) {
+	for (int i = 0; i < size * 2 + 1; i++)
 		screen[(x + i)][y] = light;
 
-		screen[(x + i)][y - size] = light;
-	}
-
-	for (int i = 0; i < size + 1; i++) {
+	for (int i = 0; i < size + 1; i++)
 		screen[x + (size * 2)][y - i] = light;
 
-		screen[x][y - i] = light;
-	}
+	for (int i = 0; i < size * 2 + 1; i++)
+		screen[(x + i)][y - size] = light;
 
 }
 void DrawP(int x, int y, int size, bool light) {
-
-	for (int i = 0; i < size + 1; i++) {
+	for (int i = 0; i < size + 1; i++)
 		screen[x][y - i] = light;
-		screen[x + size][y - i] = light;
-	}
 
 	for (int i = 0; i < size; i++)
 		screen[x + i + 1][y - size] = light;
 
 	for (int i = 0; i < size * 2 + 1; i++)
 		screen[(x + i)][y] = light;
+
+	for (int i = 0; i < size + 1; i++)
+		screen[x + size][y - i] = light;
 
 }
 void DrawQ(int x, int y, int size, bool light) {
@@ -343,12 +346,8 @@ void DrawQ(int x, int y, int size, bool light) {
 
 }
 void DrawR(int x, int y, int size, bool light) {
-
-	for (int i = 0; i < size + 1; i++) {
+	for (int i = 0; i < size + 1; i++)
 		screen[x][y - i] = light;
-		screen[x + size + i][y - i] = light;
-		screen[x + size][y - i] = light;
-	}
 
 	for (int i = 0; i < size; i++)
 		screen[x + i + 1][y - size] = light;
@@ -356,21 +355,28 @@ void DrawR(int x, int y, int size, bool light) {
 	for (int i = 0; i < size * 2 + 1; i++)
 		screen[(x + i)][y] = light;
 
-}
-void DrawS(int x, int y, int size, bool light) {
-
-	for (int i = 0; i < size + 1; i++) {
-		screen[x][y - i] = light;
-		screen[x + size * 2][y - size + i] = light;
-	}
-
-	for (int i = 1; i < size; i++) {
-		screen[x + i][y] = light;
-
+	for (int i = 0; i < size + 1; i++)
 		screen[x + size][y - i] = light;
 
+	for (int i = 0; i < size + 1; i++)
+		screen[x + size + i][y - i] = light;
+
+}
+void DrawS(int x, int y, int size, bool light) {
+	for (int i = 0; i < size + 1; i++)
+		screen[x][y - i] = light;
+
+	for (int i = 1; i < size; i++)
+		screen[x + i][y] = light;
+
+	for (int i = 0; i < size; i++)
+		screen[x + size][y - i] = light;
+
+	for (int i = 0; i < size; i++)
 		screen[x + size + i][y - size] = light;
-	}
+
+	for (int i = 0; i < size + 1; i++)
+		screen[x + size * 2][y - size + i] = light;
 
 }
 void DrawT(int x, int y, int size, bool light) {
@@ -382,10 +388,11 @@ void DrawT(int x, int y, int size, bool light) {
 }
 void DrawU(int x, int y, int size, bool light) {
 
-	for (int i = 0; i < size * 2 + 1; i++) {
+	for (int i = 0; i < size * 2 + 1; i++)
 		screen[x + i][y] = light;
+
+	for (int i = 0; i < size * 2 + 1; i++)
 		screen[x + i][y - size] = light;
-	}
 
 	for (int i = 0; i < size; i++)
 		screen[x + size * 2][y - size + i] = light;
@@ -426,57 +433,55 @@ void DrawW(int x, int y, int size, bool light) {
 	}
 
 	else {
-		for (int i = 0; i < size + 1; i++) {
+		for (int i = 0; i < size + 1; i++)
 			screen[x + size + i][y] = light;
-
-			screen[x + i][y - size] = light;
-
-			screen[x + size + i][y - size] = light;
-		}
 
 		for (int i = 0; i < size; i++)
 			screen[x + i][y] = light;
 
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < size + 1; i++)
+			screen[x + i][y - size] = light;
+
+		for (int i = 0; i < size + 1; i++)
+			screen[x + size + i][y - size] = light;
+
+		for (int i = 0; i < 3; i++)
 			screen[x + size + i][y - 1] = light;
-
+		for (int i = 0; i < 3; i++)
 			screen[x + size + i - 3][y - 2] = light;
-
+		for (int i = 0; i < 3; i++)
 			screen[x + size + i][y - 3] = light;
-		}
 
 	}
 
 }
 void DrawX(int x, int y, int size, bool light) {
 	if (size == 2) {
-		for (int i = 0; i < 2; i++) {
+		for (int i = 0; i < 2; i++)
 			screen[x + i][y] = light;
+		for (int i = 0; i < 2; i++)
 			screen[x + i][y - size] = light;
 
+		for (int i = 0; i < 2; i++)
 			screen[x + i + 3][y] = light;
-
+		for (int i = 0; i < 2; i++)
 			screen[x + i + 3][y - size] = light;
-		}
 
 		screen[x + 2][y - 1] = light;
-
 	} else {
-
-		for (int i = 0; i < size - 1; i++) {
+		for (int i = 0; i < size - 1; i++)
 			screen[x + i][y - 1] = light;
-
+		for (int i = 0; i < size - 1; i++)
 			screen[x + 3 + i][y - 2] = light;
-
+		for (int i = 0; i < size - 1; i++)
 			screen[x + 6 + i][y - 3] = light;
 
+		for (int i = 0; i < size - 1; i++)
 			screen[x + i][y - 3] = light;
-
+		for (int i = 0; i < size - 1; i++)
 			screen[x + 3 + i][y - 2] = light;
-
+		for (int i = 0; i < size - 1; i++)
 			screen[x + 6 + i][y - 1] = light;
-		}
-
 		screen[x][y - size] = light;
 		screen[x + (size * 2)][y - size] = light;
 		screen[x][y] = light;
@@ -485,14 +490,11 @@ void DrawX(int x, int y, int size, bool light) {
 
 }
 void DrawY(int x, int y, int size, bool light) {
-
 	if (size == 2) {
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 3; i++)
 			screen[x + i][y] = light;
-
+		for (int i = 0; i < 3; i++)
 			screen[x + i][y - size] = light;
-		}
-
 		screen[x + 3][y - 1] = light;
 		screen[x + 4][y - 1] = light;
 
@@ -515,35 +517,32 @@ void DrawY(int x, int y, int size, bool light) {
 
 }
 void DrawZ(int x, int y, int size, bool light) {
-
 	if (size == 2) {
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 3; i++)
 			screen[x][y - i] = light;
-
+		for (int i = 0; i < 3; i++)
 			screen[x + size + size][y - i] = light;
-		}
 
-		for (int i = 0; i < 2; i++) {
+		for (int i = 0; i < 2; i++)
 			screen[x + i][y - size] = light;
-
+		for (int i = 0; i < 2; i++)
 			screen[x + i + 3][y] = light;
-		}
 
 		screen[x + 2][y - 1] = light;
 
 	} else {
-		for (int i = 0; i < size + 1; i++) {
+		for (int i = 0; i < size + 1; i++)
 			screen[x][y - i] = light;
-			screen[x + size * 2][y - size + i] = light;
-		}
 
-		for (int i = 0; i < size - 1; i++) {
+		for (int i = 0; i < size - 1; i++)
 			screen[x + i][y - 3] = light;
-
+		for (int i = 0; i < size - 1; i++)
 			screen[x + 3 + i][y - 2] = light;
-
+		for (int i = 0; i < size - 1; i++)
 			screen[x + 6 + i][y - 1] = light;
-		}
+
+		for (int i = 0; i < size + 1; i++)
+			screen[x + size * 2][y - size + i] = light;
 	}
 }
 
@@ -650,44 +649,43 @@ void Draw1(int x, int y, int size, bool light) {
 		screen[x + i][y - size] = true;
 }
 void Draw2(int x, int y, int size, bool light) {
-
-	for (int i = 0; i < size + 1; i++) {
+	for (int i = 0; i < size + 1; i++)
 		screen[x][y - i] = true;
-		screen[x + size * 2][y - size + i] = true;
-	}
 
-	for (int i = 1; i < size; i++) {
+	for (int i = 1; i < size; i++)
 		screen[x + i][y - size] = true;
 
+	for (int i = 0; i < size; i++)
 		screen[x + size][y - i] = true;
 
+	for (int i = 0; i < size; i++)
 		screen[x + size + i][y] = true;
-	}
+
+	for (int i = 0; i < size + 1; i++)
+		screen[x + size * 2][y - size + i] = true;
 
 }
 void Draw3(int x, int y, int size, bool light) {
-
-	for (int i = 0; i < size + 1; i++) {
+	for (int i = 0; i < size + 1; i++)
 		screen[x][y - i] = true;
-
-		screen[x + size][y - i] = true;
-
-		screen[x + (size * 2)][y - i] = true;
-	}
 
 	for (int i = 0; i < size * 2 + 1; i++)
 		screen[x + i][y - size] = true;
+
+	for (int i = 0; i < size + 1; i++)
+		screen[x + size][y - i] = true;
+
+	for (int i = 0; i < size + 1; i++)
+		screen[x + (size * 2)][y - i] = true;
+
 }
 void Draw4(int x, int y, int size, bool light) {
-
-	for (int i = 0; i < size; i++) {
+	for (int i = 0; i < size; i++)
 		screen[x + i][y] = true;
-
+	for (int i = 0; i < size; i++)
 		screen[x + i][y - size] = true;
-
+	for (int i = 0; i < size; i++)
 		screen[x + size][y - i] = true;
-	}
-
 	for (int i = 0; i < size + 1; i++)
 		screen[x + size + i][y - size] = true;
 
@@ -697,20 +695,20 @@ void Draw5(int x, int y, int size, bool light) {
 }
 void Draw6(int x, int y, int size, bool light) {
 
-	for (int i = 0; i < size + 1; i++) {
+	for (int i = 0; i < size + 1; i++)
 		screen[x][y - i] = true;
-		screen[x + size * 2][y - size + i] = true;
-	}
 
 	for (int i = 0; i < size * 2 + 1; i++)
 		screen[(x + i)][y] = true;
 
-	for (int i = 0; i < size; i++) {
+	for (int i = 0; i < size; i++)
 		screen[x + size][y - i] = true;
 
+	for (int i = 0; i < size; i++)
 		screen[x + size + i][y - size] = true;
-	}
 
+	for (int i = 0; i < size + 1; i++)
+		screen[x + size * 2][y - size + i] = true;
 }
 void Draw7(int x, int y, int size, bool light) {
 	for (int i = 0; i < size + 1; i++)
@@ -791,7 +789,6 @@ void DrawPointer(int x, int y, int size, bool light) {
 }
 
 void DrawChunk(int x, int y) {
-
 	for (int i = 0; i < z + 1; i++) {
 		screen[x + i][y] = true;
 		screen[x][y - i] = true;
@@ -802,7 +799,6 @@ void DrawChunk(int x, int y) {
 	}
 }
 void ClearChunk(int x, int y) {
-
 	for (int i = 0; i < z + 1; i++) {
 		screen[x + i][y] = false;
 		screen[x][y - i] = false;
@@ -1510,6 +1506,7 @@ void MoveScreenDownFrom(int number) {
 		}
 	}
 }
+
 void CheckHorizontal() {
 	int counter = 0;
 
@@ -1526,6 +1523,7 @@ void CheckHorizontal() {
 			score++;
 			FillREC(0, 47, 8, 0, false);
 			ParseScore(0, 47, score);
+			soundCheck = true;
 
 		}
 
@@ -1536,11 +1534,54 @@ void CheckHorizontal() {
 	DrawTetrisBorder();
 
 }
+
 void ClearRow(int number) {
 	number = number + 1;
 	for (int j = 1; j <= 9; j++)
 		ClearChunk(number * 5 + 8, j * 5 + 1);
 }
+
+//-----------
+
+//MAIN SCREEN DRAW
+void ClearScreen() {
+	for (int i = 0; i < 84; i++) {
+		for (int j = 0; j < 48; j++) {
+			screen[i][j] = false;
+			PCD8544_DrawPixel(i, j, PCD8544_Pixel_Clear);
+
+		}
+	}
+}
+void DrawScreen() {
+	for (int i = 0; i < 84; i++) {
+		for (int j = 0; j < 48; j++) {
+			if (screen[i][j])
+				PCD8544_DrawPixel(i, j, PCD8544_Pixel_Set);
+			else
+				PCD8544_DrawPixel(i, j, PCD8544_Pixel_Clear);
+
+		}
+	}
+	PCD8544_Refresh();
+}
+void FillREC(int x, int y, int x1, int y1, bool light) {
+	int sizeX = Abs(x - x1);
+	int sizeY = Abs(y - y1);
+
+	for (int i = 0; i < sizeX + 1; i++) {
+		for (int j = 0; j < sizeY + 1; j++) {
+			screen[i + x][j + y1] = light;
+
+		}
+	}
+	DrawScreen();
+}
+//--------------
+
+//ZARZADZANIE FIGURAMI
+extern uint32_t TM_RNG_Get(void);
+
 void DrawNumber(int x, int y, int size, int number, bool light) {
 	switch (number) {
 	case 0: {
@@ -1789,46 +1830,6 @@ void ParseScore(int x, int y, int number) {
 	}
 
 }
-//-----------
-
-//MAIN SCREEN DRAW
-void ClearScreen() {
-	for (int i = 0; i < 84; i++) {
-		for (int j = 0; j < 48; j++) {
-			screen[i][j] = false;
-			PCD8544_DrawPixel(i, j, PCD8544_Pixel_Clear);
-
-		}
-	}
-}
-void DrawScreen() {
-	for (int i = 0; i < 84; i++) {
-		for (int j = 0; j < 48; j++) {
-			if (screen[i][j])
-				PCD8544_DrawPixel(i, j, PCD8544_Pixel_Set);
-			else
-				PCD8544_DrawPixel(i, j, PCD8544_Pixel_Clear);
-
-		}
-	}
-	PCD8544_Refresh();
-}
-void FillREC(int x, int y, int x1, int y1, bool light) {
-	int sizeX = Abs(x - x1);
-	int sizeY = Abs(y - y1);
-
-	for (int i = 0; i < sizeX + 1; i++) {
-		for (int j = 0; j < sizeY + 1; j++) {
-			screen[i + x][j + y1] = light;
-
-		}
-	}
-	DrawScreen();
-}
-//--------------
-
-//SHAPE MOVEMENT
-extern uint32_t TM_RNG_Get(void);
 
 void MoveRight() //shape (0-18)
 {
@@ -2360,6 +2361,7 @@ void MoveRight() //shape (0-18)
 	}
 	}
 }
+
 void MoveLeft() //shape (0-18)
 {
 	int x = current[0][0];
@@ -2882,6 +2884,7 @@ void MoveLeft() //shape (0-18)
 	}
 	}
 }
+
 void MoveDown() //shape (0-18)
 {
 	int x = current[0][0];
@@ -3425,6 +3428,7 @@ void MoveDown() //shape (0-18)
 	}
 
 }
+
 void SpawnBlock() {
 	int x = 13;
 	int y = 31;
@@ -3656,6 +3660,7 @@ void SpawnBlock() {
 		break;
 	}
 }
+
 void Turn() {
 	int x = current[0][0];
 	int y = current[1][0];
@@ -4011,4 +4016,3 @@ void Turn() {
 
 	}
 }
-//===========================================
