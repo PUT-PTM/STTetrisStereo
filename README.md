@@ -18,11 +18,12 @@ Wyświetlanie oparte jest na podzieleniu ekranu na chunki, stworzeniu tabeli i n
 <b><i>Atributions:</i></b> Biblioteka do obsługi wyświetlacza http://stm32f4-discovery.com by Tilen Majerle
 
 
-<b><i>Future improvements:</i></b> -Dadanie innych trybów gry 
--Ulepszyć można model obrotów figur
--Stworzenie obudowy urządzenia
--Stworzeni róznych poziomów trudności po przez manipulowanie szybkoscią opadania bloków 
--Dodanie funkcji opierających się o używanie niewykorzystanych przycisków
+<b><i>Future improvements:</i></b> <br>
+-Dadanie innych trybów gry <br>
+-Ulepszyć można model obrotów figur<br>
+-Stworzenie obudowy urządzenia<br>
+-Stworzeni róznych poziomów trudności po przez manipulowanie szybkoscią opadania bloków <br>
+-Dodanie funkcji opierających się o używanie niewykorzystanych przycisków<br>
 
 <b><i>License:</i></b> MIT(X11)
 
