@@ -15,7 +15,7 @@ Wyświetlanie oparte jest na podzieleniu ekranu na chunki, stworzeniu tabeli i n
 
 <b><i>How to compile:</i></b> Nie wymaga podejmowania żadnych dodatkowych kroków
 
-<b><i>Atributions:</i></b> Biblioteka do obsługi wyświetlacza http://stm32f4-discovery.com by Tilen Majerle
+<b><i>Atributions:</i></b> Biblioteka do obsługi wyświetlacza https://stm32f4-discovery.net/pcd8544-nokia-33105110-lcd-stm32f429-discovery-library/ by Tilen Majerle
 
 
 <b><i>Future improvements:</i></b> <br>
