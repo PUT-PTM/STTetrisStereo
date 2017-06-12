@@ -20,7 +20,7 @@ Wyświetlanie oparte jest na podzieleniu ekranu na chunki, stworzeniu tabeli i n
 
 <b><i>Future improvements:</i></b> <br>
 -Dadanie innych trybów gry <br>
--Ulepszyć można model obrotów figur<br>
+-Ulepszenie modelu obrotu figur<br>
 -Stworzenie obudowy urządzenia<br>
 -Stworzeni róznych poziomów trudności po przez manipulowanie szybkoscią opadania bloków <br>
 -Dodanie funkcji opierających się o używanie niewykorzystanych przycisków<br>
