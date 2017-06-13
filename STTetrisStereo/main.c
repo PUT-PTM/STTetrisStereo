@@ -406,8 +406,18 @@ void TIM3_IRQHandler(void) { // Tetris Main Loop
 
 			collision = false;
 			coll = 0;
+			int temp_score = score;
+
 			CheckHorizontal();
 
+			if(temp_score == 1 && score == 2)
+			{
+				TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
+				TIM_TimeBaseStructure.TIM_Period = 4199;
+				TIM_TimeBaseStructure.TIM_Prescaler = 8999;
+				TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
+
+			}
 			spawn = true;
 		}
 

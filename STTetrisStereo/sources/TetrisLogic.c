@@ -3936,7 +3936,7 @@ void Turn() {
 		}
 		break;
 	}
-	case 15: {
+		case 15: {
 		// sprawdzenie czy obrot jest mozliwy
 		if (screen[x + z + 1][y] != true && screen[x - z - 1][y - z - 1] != true) {
 			shape = 17;
@@ -3956,7 +3956,7 @@ void Turn() {
 	}
 	case 16: {
 		// sprawdzenie czy obrot jest mozliwy
-		if (screen[x - z - 1][y] != true && screen[x + z + 1][y - z - 1] != true) {
+		if (screen[x - z  - 1][y] != true) {
 			shape = 18;
 			tmpx = current[0][0];
 			tmpy = current[1][0];
@@ -3975,26 +3975,8 @@ void Turn() {
 	case 17: {
 		// sprawdzenie czy obrot jest mozliwy
 
-		if (screen[x][y - 2 * (z + 1)] != true
+		if (screen[x + z + 1][y - 2 * (z + 1)] != true
 				&& screen[x + z + 1][y - z - 1] != true) {
-			shape = 16;
-			tmpx = current[0][0];
-			tmpy = current[1][0];
-
-			//czyszczenie miejsca obecnego
-			ClearChunk(current[0][0], current[1][0]);
-			ClearChunk(current[0][1], current[1][1]);
-			ClearChunk(current[0][2], current[1][2]);
-			ClearChunk(current[0][3], current[1][3]);
-
-			DrawShapeZHInv(tmpx, tmpy);
-
-		}
-		break;
-	}
-	case 18: {
-		// sprawdzenie czy obrot jest mozliwy
-		if (screen[x + z + 1][y - 2 * (z + 1)] != true) {
 			shape = 15;
 			tmpx = current[0][0];
 			tmpy = current[1][0];
@@ -4006,6 +3988,25 @@ void Turn() {
 			ClearChunk(current[0][3], current[1][3]);
 
 			DrawShapeZH(tmpx, tmpy);
+
+		}
+		break;
+	}
+	case 18: {
+		// sprawdzenie czy obrot jest mozliwy
+		if (screen[x + z + 1][y] != true && screen[x ][y - 2*(z + 1)] != true)
+		{
+			shape = 16;
+			tmpx = current[0][0];
+			tmpy = current[1][0];
+
+			//czyszczenie miejsca obecnego
+			ClearChunk(current[0][0], current[1][0]);
+			ClearChunk(current[0][1], current[1][1]);
+			ClearChunk(current[0][2], current[1][2]);
+			ClearChunk(current[0][3], current[1][3]);
+
+			DrawShapeZHInv(tmpx, tmpy);
 
 		}
 		break;
